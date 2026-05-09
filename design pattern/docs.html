@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design Patterns — Tài liệu lập trình</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #1a1a25;
+      --border: #2a2a3a;
+      --accent: #7c6aff;
+      --accent2: #ff6a9f;
+      --accent3: #6affd4;
+      --text: #e8e8f0;
+      --text-muted: #7a7a9a;
+      --creational: #7c6aff;
+      --structural: #ff6a9f;
+      --behavioral: #6affd4;
+      --font-mono: 'Space Mono', monospace;
+      --font-body: 'Sora', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* Noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ===== HEADER ===== */
+    header {
+      position: relative;
+      padding: 80px 60px 60px;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      top: -120px; right: -120px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(124,106,255,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .header-tag {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.1s;
+    }
+
+    h1 {
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.2s;
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .header-desc {
+      margin-top: 20px;
+      max-width: 580px;
+      color: var(--text-muted);
+      font-size: 16px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.35s;
+    }
+
+    .pattern-count {
+      margin-top: 32px;
+      display: flex; gap: 32px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.5s;
+    }
+
+    .count-item {
+      display: flex; flex-direction: column; gap: 4px;
+    }
+
+    .count-num {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .count-num.c { color: var(--creational); }
+    .count-num.s { color: var(--structural); }
+    .count-num.b { color: var(--behavioral); }
+
+    .count-label {
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* ===== LAYOUT ===== */
+    .container {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ===== SIDEBAR ===== */
+    aside {
+      border-right: 1px solid var(--border);
+      padding: 32px 0;
+      position: sticky;
+      top: 0; height: 100vh;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .sidebar-section {
+      margin-bottom: 8px;
+    }
+
+    .sidebar-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      padding: 8px 24px;
+      text-transform: uppercase;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .sidebar-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .sidebar-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-c { background: var(--creational); }
+    .dot-s { background: var(--structural); }
+    .dot-b { background: var(--behavioral); }
+
+    .sidebar-link {
+      display: block;
+      padding: 8px 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s, background 0.2s;
+      border-left: 2px solid transparent;
+      margin-left: 0;
+    }
+
+    .sidebar-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+    .sidebar-link.active { color: var(--text); border-left-color: var(--accent); background: rgba(124,106,255,0.07); }
+
+    /* ===== MAIN ===== */
+    main {
+      padding: 48px 60px;
+      max-width: 860px;
+    }
+
+    /* ===== CATEGORY HEADER ===== */
+    .category {
+      margin-bottom: 80px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .category.visible { opacity: 1; transform: translateY(0); }
+
+    .category-header {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .category-badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 2px;
+    }
+
+    .badge-c { background: rgba(124,106,255,0.15); color: var(--creational); border: 1px solid rgba(124,106,255,0.3); }
+    .badge-s { background: rgba(255,106,159,0.15); color: var(--structural); border: 1px solid rgba(255,106,159,0.3); }
+    .badge-b { background: rgba(106,255,212,0.15); color: var(--behavioral); border: 1px solid rgba(106,255,212,0.3); }
+
+    .category-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .category-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 32px;
+      padding-left: 2px;
+      border-left: 3px solid var(--border);
+      padding-left: 16px;
+    }
+
+    /* ===== PATTERN CARD ===== */
+    .pattern-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .pattern-card:hover { border-color: rgba(124,106,255,0.4); }
+
+    .card-header {
+      padding: 20px 24px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      user-select: none;
+      gap: 16px;
+    }
+
+    .card-title-group { display: flex; align-items: center; gap: 12px; flex: 1; }
+
+    .pattern-icon {
+      width: 36px; height: 36px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .icon-c { background: rgba(124,106,255,0.15); }
+    .icon-s { background: rgba(255,106,159,0.15); }
+    .icon-b { background: rgba(106,255,212,0.15); }
+
+    .pattern-name {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .pattern-tagline {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .expand-btn {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      color: var(--text-muted);
+      transition: transform 0.3s, color 0.2s;
+      flex-shrink: 0;
+    }
+
+    .pattern-card.open .expand-btn {
+      transform: rotate(45deg);
+      color: var(--accent);
+    }
+
+    .card-body {
+      display: none;
+      padding: 0 24px 24px;
+    }
+
+    .pattern-card.open .card-body { display: block; }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 24px;
+    }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      margin-top: 20px;
+    }
+
+    .section-label:first-child { margin-top: 0; }
+
+    p { color: #c0c0d8; margin-bottom: 12px; font-size: 14px; }
+
+    .use-when {
+      background: var(--surface2);
+      border-radius: 6px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: #b0b0cc;
+      display: flex; gap: 10px;
+      align-items: flex-start;
+    }
+
+    .use-when::before { content: '✓'; color: var(--accent3); flex-shrink: 0; margin-top: 1px; }
+
+    .use-list { display: flex; flex-direction: column; gap: 8px; }
+
+    /* ===== CODE BLOCK ===== */
+    .code-wrap {
+      background: #080810;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .code-bar {
+      background: var(--surface2);
+      padding: 8px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-lang {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .copy-btn {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+    .copy-btn.copied { color: var(--accent3); border-color: var(--accent3); }
+
+    pre {
+      padding: 20px;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.7;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    /* Syntax highlight */
+    .kw { color: #bf91ff; }
+    .cl { color: #6adeff; }
+    .fn { color: #ffe066; }
+    .st { color: #ff9f6a; }
+    .cm { color: #5a5a7a; font-style: italic; }
+    .num { color: #6affd4; }
+
+    /* ===== DIAGRAM ===== */
+    .diagram {
+      background: #080810;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 24px;
+      margin-top: 4px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #888;
+      line-height: 1.8;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    /* ===== SEARCH ===== */
+    .search-wrap {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+
+    #search {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 14px 9px 36px;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%237a7a9a' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 12px center;
+    }
+
+    #search:focus { border-color: var(--accent); }
+    #search::placeholder { color: var(--text-muted); }
+
+    /* ===== TOP NAV ===== */
+    .top-nav {
+      position: sticky; top: 0;
+      background: rgba(10,10,15,0.9);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 60px;
+      display: flex; align-items: center; justify-content: space-between;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links { display: flex; gap: 8px; }
+
+    .nav-pill {
+      font-size: 12px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .nav-pill:hover, .nav-pill.active {
+      background: rgba(124,106,255,0.15);
+      border-color: rgba(124,106,255,0.4);
+      color: var(--accent);
+    }
+
+    /* ===== PROGRESS BAR ===== */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      z-index: 9999;
+      transition: width 0.1s;
+      width: 0%;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      header { padding: 48px 24px 40px; }
+      .container { grid-template-columns: 1fr; }
+      aside { display: none; }
+      main { padding: 32px 24px; }
+      .top-nav { padding: 12px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<nav class="top-nav">
+  <div class="nav-logo">design<span>patterns</span>.dev</div>
+  <div class="nav-links">
+    <a href="#creational" class="nav-pill">Khởi tạo</a>
+    <a href="#structural" class="nav-pill">Cấu trúc</a>
+    <a href="#behavioral" class="nav-pill">Hành vi</a>
+  </div>
+</nav>
+
+<header>
+  <div class="header-tag">// Tài liệu kỹ thuật — Design Patterns</div>
+  <h1>Design<br><em>Patterns</em></h1>
+  <p class="header-desc">23 mẫu thiết kế kinh điển trong lập trình hướng đối tượng. Mỗi pattern là một giải pháp đã được kiểm chứng cho các vấn đề thường gặp.</p>
+  <div class="pattern-count">
+    <div class="count-item">
+      <span class="count-num c">05</span>
+      <span class="count-label">Creational</span>
+    </div>
+    <div class="count-item">
+      <span class="count-num s">07</span>
+      <span class="count-label">Structural</span>
+    </div>
+    <div class="count-item">
+      <span class="count-num b">11</span>
+      <span class="count-label">Behavioral</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <aside>
+    <div class="search-wrap">
+      <input type="text" id="search" placeholder="Tìm pattern...">
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label"><span class="sidebar-dot dot-c"></span>Creational</div>
+      <a href="#singleton" class="sidebar-link">Singleton</a>
+      <a href="#factory" class="sidebar-link">Factory Method</a>
+      <a href="#abstract-factory" class="sidebar-link">Abstract Factory</a>
+      <a href="#builder" class="sidebar-link">Builder</a>
+      <a href="#prototype" class="sidebar-link">Prototype</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label"><span class="sidebar-dot dot-s"></span>Structural</div>
+      <a href="#adapter" class="sidebar-link">Adapter</a>
+      <a href="#decorator" class="sidebar-link">Decorator</a>
+      <a href="#facade" class="sidebar-link">Facade</a>
+      <a href="#composite" class="sidebar-link">Composite</a>
+      <a href="#proxy" class="sidebar-link">Proxy</a>
+      <a href="#bridge" class="sidebar-link">Bridge</a>
+      <a href="#flyweight" class="sidebar-link">Flyweight</a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label"><span class="sidebar-dot dot-b"></span>Behavioral</div>
+      <a href="#observer" class="sidebar-link">Observer</a>
+      <a href="#strategy" class="sidebar-link">Strategy</a>
+      <a href="#command" class="sidebar-link">Command</a>
+      <a href="#template" class="sidebar-link">Template Method</a>
+      <a href="#iterator" class="sidebar-link">Iterator</a>
+      <a href="#state" class="sidebar-link">State</a>
+      <a href="#chain" class="sidebar-link">Chain of Responsibility</a>
+      <a href="#mediator" class="sidebar-link">Mediator</a>
+      <a href="#memento" class="sidebar-link">Memento</a>
+      <a href="#visitor" class="sidebar-link">Visitor</a>
+      <a href="#interpreter" class="sidebar-link">Interpreter</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ===== CREATIONAL ===== -->
+    <section class="category" id="creational">
+      <div class="category-header">
+        <span class="category-badge badge-c">Creational</span>
+        <h2 class="category-title">Nhóm Khởi Tạo</h2>
+      </div>
+      <p class="category-desc">Các pattern kiểm soát cách thức tạo ra object — giúp tách logic khởi tạo ra khỏi phần còn lại của chương trình, tăng tính linh hoạt và tái sử dụng.</p>
+
+      <!-- Singleton -->
+      <div class="pattern-card" id="singleton">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-c">🔒</div>
+            <div>
+              <div class="pattern-name">Singleton</div>
+              <div class="pattern-tagline">Đảm bảo chỉ có một instance duy nhất</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Singleton đảm bảo một class chỉ có đúng <strong>một instance</strong> trong toàn bộ vòng đời của ứng dụng, đồng thời cung cấp một điểm truy cập global duy nhất đến instance đó.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Database connection pool — mở nhiều connection tốn tài nguyên, chỉ cần 1 pool dùng chung.</div>
+            <div class="use-when">Configuration manager — cài đặt ứng dụng chỉ cần đọc 1 lần, chia sẻ toàn app.</div>
+            <div class="use-when">Logger — ghi log từ nhiều nơi nhưng phải đến cùng một file/stream.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar">
+              <span class="code-lang">JavaScript</span>
+              <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+            </div>
+            <pre><span class="kw">class</span> <span class="cl">DatabaseConnection</span> {
+  <span class="kw">static</span> #instance = <span class="kw">null</span>;
+  #pool = [];
+
+  <span class="cm">// Constructor private — không cho new trực tiếp</span>
+  constructor() {
+    <span class="kw">if</span> (<span class="cl">DatabaseConnection</span>.#instance) {
+      <span class="kw">throw new</span> <span class="cl">Error</span>(<span class="st">'Dùng getInstance() thay vì new'</span>);
+    }
+    <span class="kw">this</span>.#pool = <span class="kw">this</span>.<span class="fn">createPool</span>();
+  }
+
+  <span class="kw">static</span> <span class="fn">getInstance</span>() {
+    <span class="kw">if</span> (!<span class="cl">DatabaseConnection</span>.#instance) {
+      <span class="cl">DatabaseConnection</span>.#instance = <span class="kw">new</span> <span class="cl">DatabaseConnection</span>();
+    }
+    <span class="kw">return</span> <span class="cl">DatabaseConnection</span>.#instance;
+  }
+
+  <span class="fn">query</span>(sql) {
+    <span class="cm">// dùng connection từ pool</span>
+    <span class="kw">const</span> conn = <span class="kw">this</span>.#pool.<span class="fn">pop</span>();
+    <span class="kw">return</span> conn.<span class="fn">execute</span>(sql);
+  }
+}
+
+<span class="cm">// ✅ Sử dụng</span>
+<span class="kw">const</span> db1 = <span class="cl">DatabaseConnection</span>.<span class="fn">getInstance</span>();
+<span class="kw">const</span> db2 = <span class="cl">DatabaseConnection</span>.<span class="fn">getInstance</span>();
+console.<span class="fn">log</span>(db1 === db2); <span class="cm">// true — cùng 1 instance</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Factory Method -->
+      <div class="pattern-card" id="factory">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-c">🏭</div>
+            <div>
+              <div class="pattern-name">Factory Method</div>
+              <div class="pattern-tagline">Giao việc tạo object cho subclass quyết định</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Định nghĩa một interface để tạo object, nhưng để các <strong>subclass quyết định</strong> class nào sẽ được khởi tạo. Factory Method cho phép class "trì hoãn" việc tạo object cho subclass.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Không biết trước loại object cần tạo cho đến runtime.</div>
+            <div class="use-when">Muốn subclass kiểm soát việc tạo object (ví dụ: framework UI tạo button cho từng platform).</div>
+            <div class="use-when">Tạo notification system: Email, SMS, Push — cùng interface, khác implementation.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="cm">// Product interface</span>
+<span class="kw">class</span> <span class="cl">Notification</span> {
+  <span class="fn">send</span>(message) { <span class="kw">throw new</span> <span class="cl">Error</span>(<span class="st">'Phải implement send()'</span>); }
+}
+
+<span class="kw">class</span> <span class="cl">EmailNotification</span> <span class="kw">extends</span> <span class="cl">Notification</span> {
+  <span class="fn">send</span>(message) { console.<span class="fn">log</span>(<span class="st">`📧 Email: <span class="kw">${message}</span>`</span>); }
+}
+
+<span class="kw">class</span> <span class="cl">SMSNotification</span> <span class="kw">extends</span> <span class="cl">Notification</span> {
+  <span class="fn">send</span>(message) { console.<span class="fn">log</span>(<span class="st">`📱 SMS: <span class="kw">${message}</span>`</span>); }
+}
+
+<span class="cm">// Creator với factory method</span>
+<span class="kw">class</span> <span class="cl">NotificationFactory</span> {
+  <span class="kw">static</span> <span class="fn">create</span>(type) {
+    <span class="kw">const</span> map = {
+      email: <span class="cl">EmailNotification</span>,
+      sms: <span class="cl">SMSNotification</span>,
+    };
+    <span class="kw">const</span> <span class="cl">Class</span> = map[type];
+    <span class="kw">if</span> (!<span class="cl">Class</span>) <span class="kw">throw new</span> <span class="cl">Error</span>(<span class="st">`Unknown type: <span class="kw">${type}</span>`</span>);
+    <span class="kw">return new</span> <span class="cl">Class</span>();
+  }
+}
+
+<span class="cm">// ✅ Sử dụng</span>
+<span class="kw">const</span> notifier = <span class="cl">NotificationFactory</span>.<span class="fn">create</span>(<span class="st">'email'</span>);
+notifier.<span class="fn">send</span>(<span class="st">'Chào mừng bạn!'</span>); <span class="cm">// 📧 Email: Chào mừng bạn!</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Builder -->
+      <div class="pattern-card" id="builder">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-c">🧱</div>
+            <div>
+              <div class="pattern-name">Builder</div>
+              <div class="pattern-tagline">Xây dựng object phức tạp từng bước</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Builder tách việc xây dựng một object phức tạp ra khỏi phần biểu diễn của nó. Cho phép tạo các biểu diễn khác nhau của cùng một quá trình xây dựng, sử dụng pattern <strong>method chaining</strong> rất phổ biến.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Object có nhiều tham số tùy chọn — tránh "telescoping constructor" anti-pattern.</div>
+            <div class="use-when">Cần tạo nhiều biến thể của object (QueryBuilder, EmailBuilder, HTMLBuilder).</div>
+            <div class="use-when">Muốn code dễ đọc kiểu fluent API: new Query().select('*').from('users').where(...).</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="kw">class</span> <span class="cl">QueryBuilder</span> {
+  #query = { table: <span class="st">''</span>, fields: [<span class="st">'*'</span>], conditions: [], limit: <span class="kw">null</span> };
+
+  <span class="fn">from</span>(table) { <span class="kw">this</span>.#query.table = table; <span class="kw">return this</span>; }
+
+  <span class="fn">select</span>(...fields) { <span class="kw">this</span>.#query.fields = fields; <span class="kw">return this</span>; }
+
+  <span class="fn">where</span>(condition) {
+    <span class="kw">this</span>.#query.conditions.<span class="fn">push</span>(condition);
+    <span class="kw">return this</span>;
+  }
+
+  <span class="fn">limit</span>(n) { <span class="kw">this</span>.#query.limit = n; <span class="kw">return this</span>; }
+
+  <span class="fn">build</span>() {
+    <span class="kw">let</span> sql = <span class="st">`SELECT <span class="kw">${this.#query.fields.join(', ')}</span> FROM <span class="kw">${this.#query.table}</span>`</span>;
+    <span class="kw">if</span> (<span class="kw">this</span>.#query.conditions.length)
+      sql += <span class="st">` WHERE <span class="kw">${this.#query.conditions.join(' AND ')}</span>`</span>;
+    <span class="kw">if</span> (<span class="kw">this</span>.#query.limit)
+      sql += <span class="st">` LIMIT <span class="kw">${this.#query.limit}</span>`</span>;
+    <span class="kw">return</span> sql;
+  }
+}
+
+<span class="cm">// ✅ Fluent API — dễ đọc như văn xuôi</span>
+<span class="kw">const</span> sql = <span class="kw">new</span> <span class="cl">QueryBuilder</span>()
+  .<span class="fn">from</span>(<span class="st">'users'</span>)
+  .<span class="fn">select</span>(<span class="st">'id'</span>, <span class="st">'name'</span>, <span class="st">'email'</span>)
+  .<span class="fn">where</span>(<span class="st">'age > 18'</span>)
+  .<span class="fn">where</span>(<span class="st">'active = true'</span>)
+  .<span class="fn">limit</span>(<span class="num">10</span>)
+  .<span class="fn">build</span>();
+<span class="cm">// "SELECT id, name, email FROM users WHERE age > 18 AND active = true LIMIT 10"</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prototype -->
+      <div class="pattern-card" id="prototype">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-c">🧬</div>
+            <div>
+              <div class="pattern-name">Prototype</div>
+              <div class="pattern-tagline">Clone object thay vì tạo mới từ đầu</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Cho phép sao chép (clone) object hiện có mà không phụ thuộc vào class của nó. Hữu ích khi việc tạo object mới tốn kém hơn việc copy từ một prototype.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Object khởi tạo tốn kém (query DB, parse file) — clone nhanh hơn tạo mới.</div>
+            <div class="use-when">Game: spawn nhiều enemy cùng loại từ 1 template.</div>
+            <div class="use-when">Undo system: lưu snapshot state bằng cách clone object.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="kw">class</span> <span class="cl">Enemy</span> {
+  constructor(type, hp, speed, skills = []) {
+    <span class="kw">this</span>.type = type;
+    <span class="kw">this</span>.hp = hp;
+    <span class="kw">this</span>.speed = speed;
+    <span class="kw">this</span>.skills = skills;
+  }
+
+  <span class="fn">clone</span>() {
+    <span class="cm">// Deep clone để tránh shared reference</span>
+    <span class="kw">return new</span> <span class="cl">Enemy</span>(
+      <span class="kw">this</span>.type, <span class="kw">this</span>.hp, <span class="kw">this</span>.speed,
+      [...<span class="kw">this</span>.skills]
+    );
+  }
+}
+
+<span class="cm">// Tạo prototype một lần</span>
+<span class="kw">const</span> orcTemplate = <span class="kw">new</span> <span class="cl">Enemy</span>(<span class="st">'Orc'</span>, <span class="num">100</span>, <span class="num">5</span>, [<span class="st">'slash'</span>, <span class="st">'block'</span>]);
+
+<span class="cm">// Spawn 3 orc từ prototype — không cần query DB lại</span>
+<span class="kw">const</span> wave = <span class="cl">Array</span>.<span class="fn">from</span>({ length: <span class="num">3</span> }, () => orcTemplate.<span class="fn">clone</span>());
+wave[<span class="num">0</span>].hp = <span class="num">150</span>; <span class="cm">// boss orc — chỉ thay đổi clone</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Abstract Factory -->
+      <div class="pattern-card" id="abstract-factory">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-c">🔮</div>
+            <div>
+              <div class="pattern-name">Abstract Factory</div>
+              <div class="pattern-tagline">Tạo họ các object liên quan mà không phụ thuộc class cụ thể</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Cung cấp interface để tạo một <strong>họ các object liên quan</strong> mà không cần chỉ định class cụ thể. Giống Factory Method nhưng cho nhiều loại product cùng lúc.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">UI cross-platform: tạo Button + Checkbox + Input đồng bộ cho Windows/Mac/Linux.</div>
+            <div class="use-when">Hệ thống theme: Dark/Light — tất cả component phải match với nhau.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="cm">// Abstract products</span>
+<span class="kw">class</span> <span class="cl">Button</span> { <span class="fn">render</span>() {} }
+<span class="kw">class</span> <span class="cl">Input</span>  { <span class="fn">render</span>() {} }
+
+<span class="cm">// Concrete products — Windows</span>
+<span class="kw">class</span> <span class="cl">WinButton</span> <span class="kw">extends</span> <span class="cl">Button</span> {
+  <span class="fn">render</span>() { <span class="kw">return</span> <span class="st">'[Windows Button]'</span>; }
+}
+<span class="kw">class</span> <span class="cl">WinInput</span> <span class="kw">extends</span> <span class="cl">Input</span> {
+  <span class="fn">render</span>() { <span class="kw">return</span> <span class="st">'[Windows Input]'</span>; }
+}
+
+<span class="cm">// Abstract Factory</span>
+<span class="kw">class</span> <span class="cl">UIFactory</span> {
+  <span class="fn">createButton</span>() {}
+  <span class="fn">createInput</span>()  {}
+}
+
+<span class="cm">// Concrete Factory</span>
+<span class="kw">class</span> <span class="cl">WindowsFactory</span> <span class="kw">extends</span> <span class="cl">UIFactory</span> {
+  <span class="fn">createButton</span>() { <span class="kw">return new</span> <span class="cl">WinButton</span>(); }
+  <span class="fn">createInput</span>()  { <span class="kw">return new</span> <span class="cl">WinInput</span>(); }
+}
+
+<span class="cm">// Client không biết platform cụ thể</span>
+<span class="kw">function</span> <span class="fn">buildForm</span>(factory) {
+  <span class="kw">const</span> btn = factory.<span class="fn">createButton</span>();
+  <span class="kw">const</span> inp = factory.<span class="fn">createInput</span>();
+  <span class="kw">return</span> [btn.<span class="fn">render</span>(), inp.<span class="fn">render</span>()];
+}
+
+<span class="fn">buildForm</span>(<span class="kw">new</span> <span class="cl">WindowsFactory</span>()); <span class="cm">// ['[Windows Button]', '[Windows Input]']</span></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== STRUCTURAL ===== -->
+    <section class="category" id="structural">
+      <div class="category-header">
+        <span class="category-badge badge-s">Structural</span>
+        <h2 class="category-title">Nhóm Cấu Trúc</h2>
+      </div>
+      <p class="category-desc">Các pattern liên quan đến cách tổ chức class và object thành các cấu trúc lớn hơn, đồng thời vẫn giữ tính linh hoạt và hiệu quả.</p>
+
+      <!-- Adapter -->
+      <div class="pattern-card" id="adapter">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-s">🔌</div>
+            <div>
+              <div class="pattern-name">Adapter</div>
+              <div class="pattern-tagline">Chuyển đổi interface không tương thích</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Adapter hoạt động như một lớp bọc, chuyển đổi interface của một class thành interface khác mà client mong đợi. Cho phép các class có interface không tương thích <strong>làm việc cùng nhau</strong>.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Tích hợp thư viện bên thứ ba có API khác với hệ thống hiện tại.</div>
+            <div class="use-when">Legacy code: wrap API cũ để dùng với code mới.</div>
+            <div class="use-when">Chuyển đổi format dữ liệu: XML → JSON, USD → VND.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="cm">// Thư viện cũ: dùng XML</span>
+<span class="kw">class</span> <span class="cl">OldPaymentAPI</span> {
+  <span class="fn">payWithXML</span>(xmlData) {
+    console.<span class="fn">log</span>(<span class="st">`Paying with XML: <span class="kw">${xmlData}</span>`</span>);
+  }
+}
+
+<span class="cm">// Hệ thống mới dùng JSON</span>
+<span class="kw">class</span> <span class="cl">PaymentAdapter</span> {
+  constructor(oldAPI) { <span class="kw">this</span>.oldAPI = oldAPI; }
+
+  <span class="fn">pay</span>(jsonData) {
+    <span class="cm">// Convert JSON → XML rồi gọi API cũ</span>
+    <span class="kw">const</span> xml = <span class="kw">this</span>.<span class="fn">jsonToXML</span>(jsonData);
+    <span class="kw">this</span>.oldAPI.<span class="fn">payWithXML</span>(xml);
+  }
+
+  <span class="fn">jsonToXML</span>(json) {
+    <span class="kw">return</span> <span class="st">`&lt;payment&gt;&lt;amount&gt;<span class="kw">${json.amount}</span>&lt;/amount&gt;&lt;/payment&gt;`</span>;
+  }
+}
+
+<span class="cm">// ✅ Client chỉ biết interface mới (JSON)</span>
+<span class="kw">const</span> adapter = <span class="kw">new</span> <span class="cl">PaymentAdapter</span>(<span class="kw">new</span> <span class="cl">OldPaymentAPI</span>());
+adapter.<span class="fn">pay</span>({ amount: <span class="num">500000</span>, currency: <span class="st">'VND'</span> });</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Decorator -->
+      <div class="pattern-card" id="decorator">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-s">🎨</div>
+            <div>
+              <div class="pattern-name">Decorator</div>
+              <div class="pattern-tagline">Thêm tính năng vào object mà không thay đổi class</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Cho phép <strong>thêm hành vi mới vào object</strong> bằng cách bọc nó trong một decorator object, thay vì dùng kế thừa. Có thể stack nhiều decorator lên nhau như "layers".</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Thêm tính năng vào object mà không muốn ảnh hưởng các object khác cùng class.</div>
+            <div class="use-when">Middleware pipeline: logging → auth → rate-limit → handler.</div>
+            <div class="use-when">I/O streams: BufferedReader bọc FileReader bọc NetworkReader.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="kw">class</span> <span class="cl">Coffee</span> {
+  <span class="fn">cost</span>()   { <span class="kw">return</span> <span class="num">20000</span>; }
+  <span class="fn">desc</span>()   { <span class="kw">return</span> <span class="st">'Espresso'</span>; }
+}
+
+<span class="cm">// Base decorator</span>
+<span class="kw">class</span> <span class="cl">CoffeeDecorator</span> {
+  constructor(coffee) { <span class="kw">this</span>.coffee = coffee; }
+  <span class="fn">cost</span>() { <span class="kw">return this</span>.coffee.<span class="fn">cost</span>(); }
+  <span class="fn">desc</span>() { <span class="kw">return this</span>.coffee.<span class="fn">desc</span>(); }
+}
+
+<span class="kw">class</span> <span class="cl">MilkDecorator</span> <span class="kw">extends</span> <span class="cl">CoffeeDecorator</span> {
+  <span class="fn">cost</span>() { <span class="kw">return super</span>.<span class="fn">cost</span>() + <span class="num">5000</span>; }
+  <span class="fn">desc</span>() { <span class="kw">return super</span>.<span class="fn">desc</span>() + <span class="st">' + Sữa'</span>; }
+}
+
+<span class="kw">class</span> <span class="cl">SyrupDecorator</span> <span class="kw">extends</span> <span class="cl">CoffeeDecorator</span> {
+  <span class="fn">cost</span>() { <span class="kw">return super</span>.<span class="fn">cost</span>() + <span class="num">8000</span>; }
+  <span class="fn">desc</span>() { <span class="kw">return super</span>.<span class="fn">desc</span>() + <span class="st">' + Syrup'</span>; }
+}
+
+<span class="cm">// ✅ Stack decorators linh hoạt</span>
+<span class="kw">let</span> order = <span class="kw">new</span> <span class="cl">Coffee</span>();
+order = <span class="kw">new</span> <span class="cl">MilkDecorator</span>(order);
+order = <span class="kw">new</span> <span class="cl">SyrupDecorator</span>(order);
+
+console.<span class="fn">log</span>(order.<span class="fn">desc</span>()); <span class="cm">// Espresso + Sữa + Syrup</span>
+console.<span class="fn">log</span>(order.<span class="fn">cost</span>()); <span class="cm">// 33000</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Facade -->
+      <div class="pattern-card" id="facade">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-s">🏛️</div>
+            <div>
+              <div class="pattern-name">Facade</div>
+              <div class="pattern-tagline">Giao diện đơn giản cho hệ thống phức tạp</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Cung cấp một <strong>interface đơn giản</strong> cho một tập hợp các interface phức tạp trong một subsystem. Facade không ẩn subsystem mà chỉ cung cấp một lớp "lối vào" dễ dùng hơn.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">SDK/Library: expose API đơn giản che giấu logic phức tạp bên trong.</div>
+            <div class="use-when">Khởi động ứng dụng: 1 method start() thay vì gọi 10 service theo thứ tự.</div>
+            <div class="use-when">Payment gateway: 1 charge() wrap nhiều bước: validate → tokenize → charge → log.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="cm">// Các subsystem phức tạp</span>
+<span class="kw">class</span> <span class="cl">VideoDecoder</span>  { <span class="fn">decode</span>(f)  { <span class="kw">return</span> <span class="st">`decoded(<span class="kw">${f}</span>)`</span>; } }
+<span class="kw">class</span> <span class="cl">AudioMixer</span>    { <span class="fn">mix</span>(d)    { <span class="kw">return</span> <span class="st">`mixed(<span class="kw">${d}</span>)`</span>; } }
+<span class="kw">class</span> <span class="cl">Renderer</span>      { <span class="fn">render</span>(d) { <span class="kw">return</span> <span class="st">`rendered(<span class="kw">${d}</span>)`</span>; } }
+
+<span class="cm">// Facade — giao diện đơn giản</span>
+<span class="kw">class</span> <span class="cl">VideoPlayerFacade</span> {
+  constructor() {
+    <span class="kw">this</span>.decoder  = <span class="kw">new</span> <span class="cl">VideoDecoder</span>();
+    <span class="kw">this</span>.mixer    = <span class="kw">new</span> <span class="cl">AudioMixer</span>();
+    <span class="kw">this</span>.renderer = <span class="kw">new</span> <span class="cl">Renderer</span>();
+  }
+
+  <span class="fn">play</span>(file) {
+    <span class="kw">const</span> decoded  = <span class="kw">this</span>.decoder.<span class="fn">decode</span>(file);
+    <span class="kw">const</span> mixed    = <span class="kw">this</span>.mixer.<span class="fn">mix</span>(decoded);
+    <span class="kw">return this</span>.renderer.<span class="fn">render</span>(mixed);
+  }
+}
+
+<span class="cm">// ✅ Client chỉ cần biết 1 method</span>
+<span class="kw">const</span> player = <span class="kw">new</span> <span class="cl">VideoPlayerFacade</span>();
+player.<span class="fn">play</span>(<span class="st">'video.mp4'</span>); <span class="cm">// rendered(mixed(decoded(video.mp4)))</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Proxy -->
+      <div class="pattern-card" id="proxy">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-s">🛡️</div>
+            <div>
+              <div class="pattern-name">Proxy</div>
+              <div class="pattern-tagline">Kiểm soát truy cập vào object thật</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Cung cấp một object đại diện để <strong>kiểm soát truy cập</strong> vào object thật. Proxy có thể thực hiện thêm các tác vụ (caching, logging, auth) trước/sau khi gọi object thật.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Lazy loading: chỉ tạo object nặng khi thực sự cần (Virtual Proxy).</div>
+            <div class="use-when">Caching: cache kết quả API call, tránh gọi lại (Cache Proxy).</div>
+            <div class="use-when">Access control: chỉ cho phép user có quyền truy cập (Protection Proxy).</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="kw">class</span> <span class="cl">RealAPI</span> {
+  <span class="kw">async</span> <span class="fn">fetchUser</span>(id) {
+    <span class="cm">// Gọi thật — chậm, tốn tiền</span>
+    <span class="kw">return</span> { id, name: <span class="st">`User <span class="kw">${id}</span>`</span> };
+  }
+}
+
+<span class="cm">// Cache Proxy</span>
+<span class="kw">class</span> <span class="cl">CachedAPI</span> {
+  constructor(api) {
+    <span class="kw">this</span>.api   = api;
+    <span class="kw">this</span>.cache = <span class="kw">new</span> <span class="cl">Map</span>();
+  }
+
+  <span class="kw">async</span> <span class="fn">fetchUser</span>(id) {
+    <span class="kw">if</span> (<span class="kw">this</span>.cache.<span class="fn">has</span>(id)) {
+      console.<span class="fn">log</span>(<span class="st">'⚡ Cache hit!'</span>);
+      <span class="kw">return this</span>.cache.<span class="fn">get</span>(id);
+    }
+    <span class="kw">const</span> user = <span class="kw">await this</span>.api.<span class="fn">fetchUser</span>(id);
+    <span class="kw">this</span>.cache.<span class="fn">set</span>(id, user);
+    <span class="kw">return</span> user;
+  }
+}
+
+<span class="cm">// ✅ Client dùng Proxy như RealAPI</span>
+<span class="kw">const</span> api = <span class="kw">new</span> <span class="cl">CachedAPI</span>(<span class="kw">new</span> <span class="cl">RealAPI</span>());
+<span class="kw">await</span> api.<span class="fn">fetchUser</span>(<span class="num">42</span>); <span class="cm">// gọi thật</span>
+<span class="kw">await</span> api.<span class="fn">fetchUser</span>(<span class="num">42</span>); <span class="cm">// ⚡ Cache hit!</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Composite -->
+      <div class="pattern-card" id="composite">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-s">🌳</div>
+            <div>
+              <div class="pattern-name">Composite</div>
+              <div class="pattern-tagline">Xử lý object đơn lẻ và nhóm object như nhau</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Tổ chức object theo <strong>cấu trúc cây</strong>, cho phép client xử lý object đơn lẻ (Leaf) và tập hợp object (Composite) một cách thống nhất qua cùng một interface.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">File system: File và Folder cùng có size() — Folder tổng hợp size của các con.</div>
+            <div class="use-when">UI Component tree: Button, Panel, Form — tất cả đều có render().</div>
+            <div class="use-when">Tính lương: Employee đơn lẻ và Department (tổng lương nhóm) cùng interface.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="kw">class</span> <span class="cl">File</span> {
+  constructor(name, size) { <span class="kw">this</span>.name = name; <span class="kw">this</span>.size = size; }
+  <span class="fn">getSize</span>() { <span class="kw">return this</span>.size; }
+  <span class="fn">print</span>(indent = <span class="num">0</span>) {
+    console.<span class="fn">log</span>(<span class="st">' '</span>.<span class="fn">repeat</span>(indent) + <span class="st">`📄 <span class="kw">${this.name}</span> (<span class="kw">${this.size}</span>KB)`</span>);
+  }
+}
+
+<span class="kw">class</span> <span class="cl">Folder</span> {
+  constructor(name) { <span class="kw">this</span>.name = name; <span class="kw">this</span>.children = []; }
+  <span class="fn">add</span>(child) { <span class="kw">this</span>.children.<span class="fn">push</span>(child); <span class="kw">return this</span>; }
+  <span class="fn">getSize</span>() { <span class="kw">return this</span>.children.<span class="fn">reduce</span>((sum, c) => sum + c.<span class="fn">getSize</span>(), <span class="num">0</span>); }
+  <span class="fn">print</span>(indent = <span class="num">0</span>) {
+    console.<span class="fn">log</span>(<span class="st">' '</span>.<span class="fn">repeat</span>(indent) + <span class="st">`📁 <span class="kw">${this.name}</span>`</span>);
+    <span class="kw">this</span>.children.<span class="fn">forEach</span>(c => c.<span class="fn">print</span>(indent + <span class="num">2</span>));
+  }
+}
+
+<span class="cm">// ✅ Build file tree</span>
+<span class="kw">const</span> root = <span class="kw">new</span> <span class="cl">Folder</span>(<span class="st">'root'</span>)
+  .<span class="fn">add</span>(<span class="kw">new</span> <span class="cl">File</span>(<span class="st">'index.html'</span>, <span class="num">10</span>))
+  .<span class="fn">add</span>(<span class="kw">new</span> <span class="cl">Folder</span>(<span class="st">'src'</span>)
+    .<span class="fn">add</span>(<span class="kw">new</span> <span class="cl">File</span>(<span class="st">'app.js'</span>, <span class="num">50</span>))
+    .<span class="fn">add</span>(<span class="kw">new</span> <span class="cl">File</span>(<span class="st">'style.css'</span>, <span class="num">20</span>)));
+
+root.<span class="fn">print</span>();       <span class="cm">// In cây thư mục</span>
+root.<span class="fn">getSize</span>();     <span class="cm">// 80 — tổng tất cả file</span></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== BEHAVIORAL ===== -->
+    <section class="category" id="behavioral">
+      <div class="category-header">
+        <span class="category-badge badge-b">Behavioral</span>
+        <h2 class="category-title">Nhóm Hành Vi</h2>
+      </div>
+      <p class="category-desc">Các pattern xử lý giao tiếp và phân chia trách nhiệm giữa các object — tập trung vào cách object tương tác và phân phối công việc.</p>
+
+      <!-- Observer -->
+      <div class="pattern-card" id="observer">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-b">👁️</div>
+            <div>
+              <div class="pattern-name">Observer</div>
+              <div class="pattern-tagline">Pub/Sub — thông báo nhiều object khi state thay đổi</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Định nghĩa quan hệ <strong>one-to-many</strong>: khi một object (Subject) thay đổi trạng thái, tất cả các object phụ thuộc (Observer) tự động được thông báo. Đây là nền tảng của Event System và Reactive Programming.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Event system: click, keypress, custom events.</div>
+            <div class="use-when">State management: Redux store notify component khi state thay đổi.</div>
+            <div class="use-when">Real-time: server push thông báo đến nhiều client.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="kw">class</span> <span class="cl">EventEmitter</span> {
+  #events = {};
+
+  <span class="fn">on</span>(event, listener) {
+    (<span class="kw">this</span>.#events[event] ??= []).<span class="fn">push</span>(listener);
+    <span class="kw">return</span> () => <span class="kw">this</span>.<span class="fn">off</span>(event, listener); <span class="cm">// unsubscribe fn</span>
+  }
+
+  <span class="fn">off</span>(event, listener) {
+    <span class="kw">this</span>.#events[event] = (<span class="kw">this</span>.#events[event] ?? [])
+      .<span class="fn">filter</span>(l => l !== listener);
+  }
+
+  <span class="fn">emit</span>(event, data) {
+    (<span class="kw">this</span>.#events[event] ?? []).<span class="fn">forEach</span>(l => <span class="fn">l</span>(data));
+  }
+}
+
+<span class="cm">// ✅ Sử dụng</span>
+<span class="kw">const</span> store = <span class="kw">new</span> <span class="cl">EventEmitter</span>();
+
+<span class="kw">const</span> unsub = store.<span class="fn">on</span>(<span class="st">'cart:update'</span>, ({ items }) => {
+  console.<span class="fn">log</span>(<span class="st">`🛒 Giỏ hàng: <span class="kw">${items.length}</span> sản phẩm`</span>);
+});
+
+store.<span class="fn">emit</span>(<span class="st">'cart:update'</span>, { items: [<span class="st">'Áo'</span>, <span class="st">'Quần'</span>] });
+<span class="cm">// 🛒 Giỏ hàng: 2 sản phẩm</span>
+
+<span class="fn">unsub</span>(); <span class="cm">// Hủy đăng ký</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Strategy -->
+      <div class="pattern-card" id="strategy">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-b">♟️</div>
+            <div>
+              <div class="pattern-name">Strategy</div>
+              <div class="pattern-tagline">Đóng gói thuật toán, hoán đổi tự do</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Định nghĩa một họ các thuật toán, đóng gói từng cái lại, và làm cho chúng <strong>hoán đổi được</strong>. Strategy cho phép thuật toán thay đổi độc lập với client sử dụng nó.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Nhiều cách sort: BubbleSort, QuickSort, MergeSort — đổi runtime.</div>
+            <div class="use-when">Payment: thay đổi phương thức thanh toán (Momo, ZaloPay, Card) mà không sửa logic đặt hàng.</div>
+            <div class="use-when">Compression: ZIP, RAR, GZIP — cùng interface compress(data).</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="cm">// Strategies</span>
+<span class="kw">const</span> MomoStrategy = {
+  <span class="fn">pay</span>(amount) { console.<span class="fn">log</span>(<span class="st">`💜 Momo: <span class="kw">${amount.toLocaleString()}</span>đ`</span>); }
+};
+
+<span class="kw">const</span> CardStrategy = {
+  <span class="fn">pay</span>(amount) { console.<span class="fn">log</span>(<span class="st">`💳 Card: <span class="kw">${amount.toLocaleString()}</span>đ`</span>); }
+};
+
+<span class="cm">// Context</span>
+<span class="kw">class</span> <span class="cl">Checkout</span> {
+  #strategy;
+
+  <span class="fn">setStrategy</span>(strategy) { <span class="kw">this</span>.#strategy = strategy; }
+
+  <span class="fn">processPayment</span>(amount) {
+    <span class="kw">if</span> (!<span class="kw">this</span>.#strategy) <span class="kw">throw new</span> <span class="cl">Error</span>(<span class="st">'Chọn phương thức thanh toán'</span>);
+    <span class="kw">this</span>.#strategy.<span class="fn">pay</span>(amount);
+  }
+}
+
+<span class="cm">// ✅ Đổi strategy runtime</span>
+<span class="kw">const</span> checkout = <span class="kw">new</span> <span class="cl">Checkout</span>();
+
+checkout.<span class="fn">setStrategy</span>(MomoStrategy);
+checkout.<span class="fn">processPayment</span>(<span class="num">250000</span>); <span class="cm">// 💜 Momo: 250,000đ</span>
+
+checkout.<span class="fn">setStrategy</span>(CardStrategy);
+checkout.<span class="fn">processPayment</span>(<span class="num">250000</span>); <span class="cm">// 💳 Card: 250,000đ</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Command -->
+      <div class="pattern-card" id="command">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-b">📋</div>
+            <div>
+              <div class="pattern-name">Command</div>
+              <div class="pattern-tagline">Đóng gói request thành object — hỗ trợ Undo/Redo</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Biến một request thành một <strong>object độc lập</strong> chứa toàn bộ thông tin về request đó. Cho phép queue commands, log, undo/redo, và thực thi trễ.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Undo/Redo: text editor, Photoshop — mỗi hành động là 1 command có thể reverse.</div>
+            <div class="use-when">Task queue: gom nhiều lệnh lại thực thi theo batch.</div>
+            <div class="use-when">Macro: record chuỗi lệnh, replay khi cần.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="kw">class</span> <span class="cl">TextEditor</span> {
+  text = <span class="st">''</span>;
+  <span class="fn">write</span>(s) { <span class="kw">this</span>.text += s; }
+  <span class="fn">delete</span>(n) { <span class="kw">this</span>.text = <span class="kw">this</span>.text.<span class="fn">slice</span>(<span class="num">0</span>, -n); }
+}
+
+<span class="cm">// Commands</span>
+<span class="kw">class</span> <span class="cl">WriteCommand</span> {
+  constructor(editor, text) { <span class="kw">this</span>.editor = editor; <span class="kw">this</span>.text = text; }
+  <span class="fn">execute</span>() { <span class="kw">this</span>.editor.<span class="fn">write</span>(<span class="kw">this</span>.text); }
+  <span class="fn">undo</span>()    { <span class="kw">this</span>.editor.<span class="fn">delete</span>(<span class="kw">this</span>.text.length); }
+}
+
+<span class="cm">// Invoker với undo stack</span>
+<span class="kw">class</span> <span class="cl">History</span> {
+  #stack = [];
+  <span class="fn">execute</span>(cmd) { cmd.<span class="fn">execute</span>(); <span class="kw">this</span>.#stack.<span class="fn">push</span>(cmd); }
+  <span class="fn">undo</span>() { <span class="kw">this</span>.#stack.<span class="fn">pop</span>()?.undo(); }
+}
+
+<span class="cm">// ✅ Undo/Redo</span>
+<span class="kw">const</span> editor  = <span class="kw">new</span> <span class="cl">TextEditor</span>();
+<span class="kw">const</span> history = <span class="kw">new</span> <span class="cl">History</span>();
+
+history.<span class="fn">execute</span>(<span class="kw">new</span> <span class="cl">WriteCommand</span>(editor, <span class="st">'Hello'</span>));
+history.<span class="fn">execute</span>(<span class="kw">new</span> <span class="cl">WriteCommand</span>(editor, <span class="st">' World'</span>));
+console.<span class="fn">log</span>(editor.text); <span class="cm">// "Hello World"</span>
+
+history.<span class="fn">undo</span>();
+console.<span class="fn">log</span>(editor.text); <span class="cm">// "Hello"</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- State -->
+      <div class="pattern-card" id="state">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-b">🔄</div>
+            <div>
+              <div class="pattern-name">State</div>
+              <div class="pattern-tagline">Thay đổi hành vi object khi state thay đổi</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Cho phép object <strong>thay đổi hành vi</strong> khi trạng thái nội tại của nó thay đổi. Object sẽ trông như thể đã đổi class. Thay thế cho chuỗi if-else kiểm tra state.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Finite State Machine: đèn giao thông, vending machine, workflow.</div>
+            <div class="use-when">Media player: Playing/Paused/Stopped — mỗi state xử lý press() khác nhau.</div>
+            <div class="use-when">Order status: Pending → Processing → Shipped → Delivered.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="kw">class</span> <span class="cl">TrafficLight</span> {
+  #states = {
+    red:   { next: <span class="st">'green'</span>,  label: <span class="st">'🔴 DỪNG'</span>,  duration: <span class="num">3000</span> },
+    green: { next: <span class="st">'yellow'</span>, label: <span class="st">'🟢 ĐI'</span>,    duration: <span class="num">2000</span> },
+    yellow:{ next: <span class="st">'red'</span>,    label: <span class="st">'🟡 CHUẨN BỊ'</span>, duration: <span class="num">1000</span> },
+  };
+
+  #current = <span class="st">'red'</span>;
+
+  <span class="fn">getState</span>() { <span class="kw">return this</span>.#states[<span class="kw">this</span>.#current]; }
+
+  <span class="fn">next</span>() {
+    <span class="kw">this</span>.#current = <span class="kw">this</span>.#states[<span class="kw">this</span>.#current].next;
+    console.<span class="fn">log</span>(<span class="kw">this</span>.<span class="fn">getState</span>().label);
+  }
+}
+
+<span class="cm">// ✅</span>
+<span class="kw">const</span> light = <span class="kw">new</span> <span class="cl">TrafficLight</span>();
+light.<span class="fn">next</span>(); <span class="cm">// 🟢 ĐI</span>
+light.<span class="fn">next</span>(); <span class="cm">// 🟡 CHUẨN BỊ</span>
+light.<span class="fn">next</span>(); <span class="cm">// 🔴 DỪNG</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chain of Responsibility -->
+      <div class="pattern-card" id="chain">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-b">⛓️</div>
+            <div>
+              <div class="pattern-name">Chain of Responsibility</div>
+              <div class="pattern-tagline">Chuyền request qua chuỗi handlers</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Tạo một <strong>chuỗi các handler</strong>, mỗi handler quyết định xử lý request hoặc chuyền cho handler tiếp theo. Tách sender khỏi receiver.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Middleware stack: Express.js app.use() — mỗi middleware có thể next() hoặc dừng.</div>
+            <div class="use-when">Validation pipeline: check auth → check schema → check business rules.</div>
+            <div class="use-when">Support ticket: L1 → L2 → L3 support escalation.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="kw">class</span> <span class="cl">Handler</span> {
+  #next = <span class="kw">null</span>;
+  <span class="fn">setNext</span>(h) { <span class="kw">this</span>.#next = h; <span class="kw">return</span> h; }
+  <span class="fn">handle</span>(req) { <span class="kw">return this</span>.#next?.<span class="fn">handle</span>(req); }
+}
+
+<span class="kw">class</span> <span class="cl">AuthHandler</span> <span class="kw">extends</span> <span class="cl">Handler</span> {
+  <span class="fn">handle</span>(req) {
+    <span class="kw">if</span> (!req.token) { console.<span class="fn">log</span>(<span class="st">'❌ Unauthorized'</span>); <span class="kw">return</span>; }
+    console.<span class="fn">log</span>(<span class="st">'✅ Auth OK'</span>);
+    <span class="kw">return super</span>.<span class="fn">handle</span>(req);
+  }
+}
+
+<span class="kw">class</span> <span class="cl">RateLimitHandler</span> <span class="kw">extends</span> <span class="cl">Handler</span> {
+  <span class="fn">handle</span>(req) {
+    <span class="kw">if</span> (req.rps > <span class="num">100</span>) { console.<span class="fn">log</span>(<span class="st">'❌ Rate limit'</span>); <span class="kw">return</span>; }
+    console.<span class="fn">log</span>(<span class="st">'✅ Rate OK'</span>);
+    <span class="kw">return super</span>.<span class="fn">handle</span>(req);
+  }
+}
+
+<span class="kw">class</span> <span class="cl">BusinessHandler</span> <span class="kw">extends</span> <span class="cl">Handler</span> {
+  <span class="fn">handle</span>(req) { console.<span class="fn">log</span>(<span class="st">'🚀 Xử lý request thành công!'</span>); }
+}
+
+<span class="cm">// ✅ Build pipeline</span>
+<span class="kw">const</span> auth = <span class="kw">new</span> <span class="cl">AuthHandler</span>();
+auth.<span class="fn">setNext</span>(<span class="kw">new</span> <span class="cl">RateLimitHandler</span>()).<span class="fn">setNext</span>(<span class="kw">new</span> <span class="cl">BusinessHandler</span>());
+
+auth.<span class="fn">handle</span>({ token: <span class="st">'abc'</span>, rps: <span class="num">50</span> });
+<span class="cm">// ✅ Auth OK → ✅ Rate OK → 🚀 Xử lý request thành công!</span></pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Template Method -->
+      <div class="pattern-card" id="template">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-b">📐</div>
+            <div>
+              <div class="pattern-name">Template Method</div>
+              <div class="pattern-tagline">Định khung thuật toán, để subclass điền chi tiết</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Định nghĩa <strong>khung (skeleton) của một thuật toán</strong> trong base class, để subclass override một số bước cụ thể mà không thay đổi cấu trúc tổng thể.</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Data processing pipeline: đọc → xử lý → xuất — bước giữa khác nhau theo format.</div>
+            <div class="use-when">Test framework: setUp() → test() → tearDown() — framework gọi theo thứ tự cố định.</div>
+            <div class="use-when">Report generator: khung report giống nhau, chỉ phần data binding khác.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="kw">class</span> <span class="cl">DataExporter</span> {
+  <span class="cm">// Template method — khung cố định</span>
+  <span class="fn">export</span>(data) {
+    <span class="kw">const</span> validated  = <span class="kw">this</span>.<span class="fn">validate</span>(data);
+    <span class="kw">const</span> formatted  = <span class="kw">this</span>.<span class="fn">format</span>(validated);
+    <span class="kw">const</span> compressed = <span class="kw">this</span>.<span class="fn">compress</span>(formatted);
+    <span class="kw">this</span>.<span class="fn">save</span>(compressed);
+  }
+
+  <span class="fn">validate</span>(d) { <span class="kw">return</span> d.filter(<span class="cl">Boolean</span>); } <span class="cm">// chung</span>
+  <span class="fn">compress</span>(d) { <span class="kw">return</span> d; }                  <span class="cm">// hook — override nếu cần</span>
+
+  <span class="fn">format</span>(d) { <span class="kw">throw new</span> <span class="cl">Error</span>(<span class="st">'Implement format()'</span>); }
+  <span class="fn">save</span>(d)   { <span class="kw">throw new</span> <span class="cl">Error</span>(<span class="st">'Implement save()'</span>); }
+}
+
+<span class="kw">class</span> <span class="cl">CSVExporter</span> <span class="kw">extends</span> <span class="cl">DataExporter</span> {
+  <span class="fn">format</span>(rows) { <span class="kw">return</span> rows.<span class="fn">map</span>(r => r.<span class="fn">join</span>(<span class="st">','</span>)).<span class="fn">join</span>(<span class="st">'\n'</span>); }
+  <span class="fn">save</span>(d)      { console.<span class="fn">log</span>(<span class="st">`💾 Saved CSV:\n<span class="kw">${d}</span>`</span>); }
+}
+
+<span class="cm">// ✅</span>
+<span class="kw">new</span> <span class="cl">CSVExporter</span>().<span class="fn">export</span>([[<span class="st">'Alice'</span>, <span class="num">25</span>], [<span class="st">'Bob'</span>, <span class="num">30</span>]]);</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Iterator -->
+      <div class="pattern-card" id="iterator">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title-group">
+            <div class="pattern-icon icon-b">🔁</div>
+            <div>
+              <div class="pattern-name">Iterator</div>
+              <div class="pattern-tagline">Duyệt collection mà không lộ cấu trúc nội tại</div>
+            </div>
+          </div>
+          <span class="expand-btn">+</span>
+        </div>
+        <div class="card-body">
+          <div class="divider"></div>
+          <div class="section-label">Mô tả</div>
+          <p>Cung cấp cách duyệt qua các phần tử của một collection mà <strong>không cần biết cấu trúc bên trong</strong> của nó (Array, Tree, Graph, LinkedList...).</p>
+          <div class="section-label">Khi nào dùng</div>
+          <div class="use-list">
+            <div class="use-when">Custom data structures: LinkedList, Tree cần for...of support.</div>
+            <div class="use-when">Lazy evaluation: chỉ tính giá trị khi được yêu cầu (vô hạn sequence).</div>
+            <div class="use-when">Thống nhất cách duyệt nhiều loại collection khác nhau.</div>
+          </div>
+          <div class="section-label">Ví dụ code</div>
+          <div class="code-wrap">
+            <div class="code-bar"><span class="code-lang">JavaScript</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+            <pre><span class="kw">class</span> <span class="cl">Range</span> {
+  constructor(start, end, step = <span class="num">1</span>) {
+    <span class="kw">this</span>.start = start;
+    <span class="kw">this</span>.end   = end;
+    <span class="kw">this</span>.step  = step;
+  }
+
+  <span class="cm">// Implement Symbol.iterator → hỗ trợ for...of</span>
+  [<span class="cl">Symbol</span>.iterator]() {
+    <span class="kw">let</span> current = <span class="kw">this</span>.start;
+    <span class="kw">const</span> { end, step } = <span class="kw">this</span>;
+
+    <span class="kw">return</span> {
+      <span class="fn">next</span>() {
+        <span class="kw">if</span> (current <= end) {
+          <span class="kw">const</span> value = current;
+          current += step;
+          <span class="kw">return</span> { value, done: <span class="kw">false</span> };
+        }
+        <span class="kw">return</span> { value: <span class="kw">undefined</span>, done: <span class="kw">true</span> };
+      }
+    };
+  }
+}
+
+<span class="cm">// ✅ Dùng như built-in iterable</span>
+<span class="kw">for</span> (<span class="kw">const</span> n <span class="kw">of new</span> <span class="cl">Range</span>(<span class="num">1</span>, <span class="num">10</span>, <span class="num">2</span>)) {
+  console.<span class="fn">log</span>(n); <span class="cm">// 1, 3, 5, 7, 9</span>
+}
+
+<span class="kw">const</span> arr = [... <span class="kw">new</span> <span class="cl">Range</span>(<span class="num">1</span>, <span class="num">5</span>)]; <span class="cm">// [1,2,3,4,5]</span></pre>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Toggle card open/close
+  function toggleCard(header) {
+    const card = header.parentElement;
+    card.classList.toggle('open');
+  }
+
+  // Copy code
+  function copyCode(btn) {
+    const pre = btn.closest('.code-wrap').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  // Progress bar
+  window.addEventListener('scroll', () => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    const pct = (scrollTop / (scrollHeight - clientHeight)) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+  });
+
+  // Intersection Observer for category animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.05 });
+
+  document.querySelectorAll('.category').forEach(el => observer.observe(el));
+
+  // Sidebar active link
+  const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+  const cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        sidebarLinks.forEach(l => {
+          l.classList.toggle('active', l.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  document.querySelectorAll('.pattern-card, .category').forEach(el => {
+    if (el.id) cardObserver.observe(el);
+  });
+
+  // Search filter
+  document.getElementById('search').addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    document.querySelectorAll('.pattern-card').forEach(card => {
+      const text = card.querySelector('.pattern-name').textContent.toLowerCase()
+              + card.querySelector('.pattern-tagline').textContent.toLowerCase();
+      card.style.display = (!q || text.includes(q)) ? '' : 'none';
+    });
+  });
+
+  // Nav pill active on scroll
+  const sections = ['creational','structural','behavioral'];
+  const navPills = document.querySelectorAll('.nav-pill');
+
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY + 120;
+    sections.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el && scrollY >= el.offsetTop) {
+        navPills.forEach(p => p.classList.remove('active'));
+        navPills[i]?.classList.add('active');
+      }
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,2106 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Advanced — Tài Liệu Chuyên Sâu</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;0,9..144,900;1,9..144,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --surface: #111827;
+            --surface2: #1a2235;
+            --border: #1e2d45;
+            --accent: #f97316;
+            --accent2: #38bdf8;
+            --accent3: #a78bfa;
+            --accent4: #34d399;
+            --accent5: #fb7185;
+            --text: #e2e8f0;
+            --text-muted: #64748b;
+            --text-dim: #94a3b8;
+            --code-bg: #0d1117;
+            --code-string: #a5f3b5;
+            --code-keyword: #93c5fd;
+            --code-type: #f9a8d4;
+            --code-comment: #4b5563;
+            --code-number: #fcd34d;
+            --code-method: #86efac;
+            --code-annotation: #c4b5fd;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            position: fixed;
+            left: 0; top: 0;
+            width: 270px;
+            height: 100vh;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        .sidebar-header {
+            padding: 24px 20px 16px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            background: var(--surface);
+            z-index: 1;
+        }
+
+        .sidebar-logo {
+            font-family: 'Fraunces', serif;
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+        }
+
+        .sidebar-logo span { color: var(--accent2); }
+
+        .sidebar-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav { padding: 12px 0; flex: 1; }
+
+        .nav-section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            padding: 12px 20px 6px;
+            font-weight: 500;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 20px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 13px;
+            color: var(--text-dim);
+            border-left: 2px solid transparent;
+            text-decoration: none;
+        }
+
+        .nav-item:hover { color: var(--text); background: var(--surface2); }
+        .nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(249,115,22,0.08); }
+
+        .nav-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* ── MAIN ── */
+        .main {
+            margin-left: 270px;
+            min-height: 100vh;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 80px 60px 60px;
+            background: linear-gradient(135deg, #0a0e17 0%, #0f172a 50%, #0a0e17 100%);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px; right: -100px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -100px; left: 200px;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(56,189,248,0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(249,115,22,0.12);
+            border: 1px solid rgba(249,115,22,0.25);
+            color: var(--accent);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hero h1 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(40px, 5vw, 64px);
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 .highlight { color: var(--accent); }
+        .hero h1 .highlight2 { color: var(--accent2); }
+
+        .hero-desc {
+            max-width: 600px;
+            color: var(--text-dim);
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+
+        .hero-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .chip:hover { transform: translateY(-1px); }
+
+        /* ── CONTENT ── */
+        .content { padding: 0; }
+
+        /* ── SECTION ── */
+        .section {
+            padding: 60px 60px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section:last-child { border-bottom: none; }
+
+        .section-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .section-icon {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .section-meta { flex: 1; }
+
+        .section-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 4px;
+        }
+
+        .section-title {
+            font-family: 'Fraunces', serif;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+
+        .section-desc {
+            color: var(--text-dim);
+            margin-top: 8px;
+            font-size: 14px;
+        }
+
+        /* ── SUBSECTION ── */
+        .subsection { margin-bottom: 48px; }
+
+        .subsection-title {
+            font-family: 'Fraunces', serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subsection-title::before {
+            content: '';
+            display: inline-block;
+            width: 3px;
+            height: 20px;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        /* ── PROSE ── */
+        p { color: var(--text-dim); margin-bottom: 16px; }
+
+        strong { color: var(--text); font-weight: 500; }
+
+        /* ── CODE BLOCK ── */
+        .code-block {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .code-lang-badge {
+            background: rgba(249,115,22,0.15);
+            color: var(--accent);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .code-dots { display: flex; gap: 6px; }
+        .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+        pre {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        pre::-webkit-scrollbar { height: 4px; }
+        pre::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        /* Syntax tokens */
+        .kw { color: var(--code-keyword); }           /* keyword */
+        .ty { color: var(--code-type); }              /* type/class */
+        .st { color: var(--code-string); }            /* string */
+        .cm { color: var(--code-comment); font-style: italic; }  /* comment */
+        .nu { color: var(--code-number); }            /* number */
+        .mt { color: var(--code-method); }            /* method */
+        .an { color: var(--code-annotation); }        /* annotation */
+        .op { color: #f8d); }                         /* operator */
+
+        /* ── CARDS ── */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+
+        .card-icon { font-size: 24px; margin-bottom: 12px; }
+
+        .card-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .card-body { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+
+        /* ── INFO BOX ── */
+        .info-box {
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 20px 0;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            font-size: 14px;
+        }
+
+        .info-box .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+        .info-box p { margin: 0; }
+        .info-note { background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2); color: #7dd3fc; }
+        .info-warn { background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.2); color: #fde68a; }
+        .info-tip  { background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.2); color: #6ee7b7; }
+        .info-danger { background: rgba(251,113,133,0.08); border: 1px solid rgba(251,113,133,0.2); color: #fda4af; }
+
+        /* ── TABLE ── */
+        .table-wrap { overflow-x: auto; margin: 20px 0; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: var(--surface2);
+            color: var(--text-dim);
+            font-weight: 500;
+            text-align: left;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: var(--text-dim);
+            vertical-align: top;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(255,255,255,0.07);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--accent2);
+        }
+
+        /* ── DIAGRAM ── */
+        .diagram {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+            overflow-x: auto;
+            color: var(--text-dim);
+        }
+
+        /* ── PIPELINE ── */
+        .pipeline {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 20px 0;
+            overflow-x: auto;
+            padding: 4px;
+        }
+
+        .pipe-step {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            padding: 12px 18px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            text-align: center;
+            min-width: 100px;
+            white-space: nowrap;
+        }
+
+        .pipe-step .ps-label { color: var(--text-muted); font-size: 10px; margin-bottom: 4px; }
+        .pipe-step .ps-name { color: var(--text); font-weight: 600; }
+        .pipe-step .ps-type { font-size: 10px; margin-top: 2px; }
+
+        .pipe-arrow {
+            color: var(--text-muted);
+            font-size: 16px;
+            padding: 0 4px;
+            flex-shrink: 0;
+        }
+
+        /* ── COPY BUTTON ── */
+        .copy-btn {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            cursor: pointer;
+            font-family: 'JetBrains Mono', monospace;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+        .copy-btn.copied { color: var(--accent4); border-color: var(--accent4); }
+
+        /* ── TAB ── */
+        .tabs { margin: 20px 0; }
+        .tab-list {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 0;
+        }
+
+        .tab-btn {
+            padding: 8px 20px;
+            font-size: 13px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-muted);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-bottom: -1px;
+        }
+
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        .tab-panel .code-block { border-radius: 0 0 12px 12px; margin-top: 0; border-top: none; }
+
+        /* ── MEMORY DIAGRAM ── */
+        .mem-diagram {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 20px 0;
+        }
+
+        .mem-region {
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid;
+        }
+
+        .mem-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mem-items { display: flex; flex-direction: column; gap: 6px; }
+
+        .mem-item {
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* ── FOOTER ── */
+        .toc-progress {
+            position: fixed;
+            top: 0; left: 270px;
+            right: 0;
+            height: 2px;
+            background: var(--border);
+            z-index: 50;
+        }
+
+        .toc-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        /* ── COLORS per section ── */
+        .c1 { color: #f97316; } .bg1 { background: rgba(249,115,22,0.12); border-color: rgba(249,115,22,0.2); }
+        .c2 { color: #38bdf8; } .bg2 { background: rgba(56,189,248,0.12); border-color: rgba(56,189,248,0.2); }
+        .c3 { color: #a78bfa; } .bg3 { background: rgba(167,139,250,0.12); border-color: rgba(167,139,250,0.2); }
+        .c4 { color: #34d399; } .bg4 { background: rgba(52,211,153,0.12); border-color: rgba(52,211,153,0.2); }
+        .c5 { color: #fb7185; } .bg5 { background: rgba(251,113,133,0.12); border-color: rgba(251,113,133,0.2); }
+        .c6 { color: #fbbf24; } .bg6 { background: rgba(251,191,36,0.12); border-color: rgba(251,191,36,0.2); }
+        .c7 { color: #e879f9; } .bg7 { background: rgba(232,121,249,0.12); border-color: rgba(232,121,249,0.2); }
+
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); }
+            .main { margin-left: 0; }
+            .hero, .section { padding: 40px 24px; }
+            .mem-diagram { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="toc-progress"><div class="toc-progress-bar" id="progressBar"></div></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-logo">Java<span>Advanced</span></div>
+        <div class="sidebar-sub">Tài liệu chuyên sâu · 7 chủ đề</div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Chủ đề</div>
+        <a class="nav-item active" href="#s1" onclick="setActive(this)">
+            <span class="nav-dot" style="background:#f97316"></span>Stream API
+        </a>
+        <a class="nav-item" href="#s2" onclick="setActive(this)">
+            <span class="nav-dot" style="background:#38bdf8"></span>Generics & Wildcards
+        </a>
+        <a class="nav-item" href="#s3" onclick="setActive(this)">
+            <span class="nav-dot" style="background:#a78bfa"></span>AOP
+        </a>
+        <a class="nav-item" href="#s4" onclick="setActive(this)">
+            <span class="nav-dot" style="background:#34d399"></span>Reflection API
+        </a>
+        <a class="nav-item" href="#s5" onclick="setActive(this)">
+            <span class="nav-dot" style="background:#fb7185"></span>CompletableFuture
+        </a>
+        <a class="nav-item" href="#s6" onclick="setActive(this)">
+            <span class="nav-dot" style="background:#fbbf24"></span>Optional Class
+        </a>
+        <a class="nav-item" href="#s7" onclick="setActive(this)">
+            <span class="nav-dot" style="background:#e879f9"></span>Memory Management
+        </a>
+    </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+    <!-- HERO -->
+    <div class="hero">
+        <div class="hero-badge">☕ Java · Advanced Topics</div>
+        <h1>Làm chủ<br><span class="highlight">Java</span> <span class="highlight2">Nâng cao</span></h1>
+        <p class="hero-desc">
+            Tài liệu chuyên sâu về 7 chủ đề quan trọng nhất trong Java hiện đại — từ Stream API, Generics, AOP, Reflection cho đến CompletableFuture, Optional và quản lý bộ nhớ JVM.
+        </p>
+        <div class="hero-chips">
+            <a class="chip" href="#s1" style="color:#f97316;border-color:rgba(249,115,22,0.3)">📦 Stream API</a>
+            <a class="chip" href="#s2" style="color:#38bdf8;border-color:rgba(56,189,248,0.3)">🔷 Generics</a>
+            <a class="chip" href="#s3" style="color:#a78bfa;border-color:rgba(167,139,250,0.3)">🔀 AOP</a>
+            <a class="chip" href="#s4" style="color:#34d399;border-color:rgba(52,211,153,0.3)">🔍 Reflection</a>
+            <a class="chip" href="#s5" style="color:#fb7185;border-color:rgba(251,113,133,0.3)">⚡ CompletableFuture</a>
+            <a class="chip" href="#s6" style="color:#fbbf24;border-color:rgba(251,191,36,0.3)">🛡️ Optional</a>
+            <a class="chip" href="#s7" style="color:#e879f9;border-color:rgba(232,121,249,0.3)">🧠 Memory</a>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- ══════════════════════════════════════════
+             SECTION 1 — STREAM API
+        ══════════════════════════════════════════ -->
+        <section class="section" id="s1">
+            <div class="section-header">
+                <div class="section-icon bg1" style="font-size:22px">📦</div>
+                <div class="section-meta">
+                    <div class="section-number">Chủ đề 01</div>
+                    <div class="section-title c1">Java Stream API</div>
+                    <div class="section-desc">Xử lý dữ liệu theo phong cách lập trình hàm — declarative, lazy, parallel</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title" style="--color:#f97316">
+                    <span style="background:#f97316;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Stream là gì?
+                </div>
+                <p>Stream là một <strong>luồng xử lý dữ liệu</strong> theo từng phần tử, hỗ trợ các phép biến đổi (transformation) và tổng hợp (reduction) theo phong cách <strong>functional programming</strong>. Stream <em>không phải là cấu trúc dữ liệu</em> — nó không lưu trữ dữ liệu mà chỉ xử lý.</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-icon">💤</div>
+                        <div class="card-title">Lazy Evaluation</div>
+                        <div class="card-body">Các intermediate operation chỉ thực thi khi terminal operation được gọi. Không lãng phí tài nguyên.</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🔗</div>
+                        <div class="card-title">Pipeline</div>
+                        <div class="card-body">Kết nối chuỗi operations lại với nhau: source → filter → map → collect. Dữ liệu chảy qua pipeline.</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🚀</div>
+                        <div class="card-title">Parallel Stream</div>
+                        <div class="card-body">Tự động chia nhỏ dữ liệu và xử lý song song trên nhiều CPU core qua ForkJoinPool.</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🔒</div>
+                        <div class="card-title">Immutable</div>
+                        <div class="card-body">Không thay đổi source data. Mỗi operation tạo ra một stream mới chứ không sửa stream gốc.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#f97316;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Vòng đời của một Stream
+                </div>
+                <div class="pipeline">
+                    <div class="pipe-step">
+                        <span class="ps-label">NGUỒN</span>
+                        <span class="ps-name">Source</span>
+                        <span class="ps-type c1">Collection / Array / File</span>
+                    </div>
+                    <span class="pipe-arrow">→</span>
+                    <div class="pipe-step">
+                        <span class="ps-label">TRUNG GIAN</span>
+                        <span class="ps-name">filter()</span>
+                        <span class="ps-type c2">Intermediate</span>
+                    </div>
+                    <span class="pipe-arrow">→</span>
+                    <div class="pipe-step">
+                        <span class="ps-label">TRUNG GIAN</span>
+                        <span class="ps-name">map()</span>
+                        <span class="ps-type c2">Intermediate</span>
+                    </div>
+                    <span class="pipe-arrow">→</span>
+                    <div class="pipe-step">
+                        <span class="ps-label">TRUNG GIAN</span>
+                        <span class="ps-name">sorted()</span>
+                        <span class="ps-type c2">Intermediate</span>
+                    </div>
+                    <span class="pipe-arrow">→</span>
+                    <div class="pipe-step">
+                        <span class="ps-label">KẾT THÚC</span>
+                        <span class="ps-name">collect()</span>
+                        <span class="ps-type c5">Terminal ⚡</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#f97316;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Tạo Stream — Các cách khởi tạo
+                </div>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title">
+                            <div class="code-dots">
+                                <div class="code-dot" style="background:#ff5f56"></div>
+                                <div class="code-dot" style="background:#ffbd2e"></div>
+                                <div class="code-dot" style="background:#27c93f"></div>
+                            </div>
+                            <span>StreamCreation.java</span>
+                            <span class="code-lang-badge">Java</span>
+                        </div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// ① Từ Collection</span>
+<span class="ty">List</span>&lt;<span class="ty">String</span>&gt; list = <span class="ty">List</span>.<span class="mt">of</span>(<span class="st">"Java"</span>, <span class="st">"Python"</span>, <span class="st">"Go"</span>);
+<span class="ty">Stream</span>&lt;<span class="ty">String</span>&gt; s1 = list.<span class="mt">stream</span>();
+
+<span class="cm">// ② Từ Array</span>
+<span class="ty">Stream</span>&lt;<span class="ty">Integer</span>&gt; s2 = <span class="ty">Arrays</span>.<span class="mt">stream</span>(<span class="kw">new</span> <span class="kw">int</span>[]{<span class="nu">1</span>,<span class="nu">2</span>,<span class="nu">3</span>}).<span class="mt">boxed</span>();
+
+<span class="cm">// ③ Stream.of()</span>
+<span class="ty">Stream</span>&lt;<span class="ty">String</span>&gt; s3 = <span class="ty">Stream</span>.<span class="mt">of</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>);
+
+<span class="cm">// ④ Stream.generate() — vô hạn, cần limit()</span>
+<span class="ty">Stream</span>&lt;<span class="ty">Double</span>&gt; randoms = <span class="ty">Stream</span>.<span class="mt">generate</span>(<span class="ty">Math</span>::<span class="mt">random</span>).<span class="mt">limit</span>(<span class="nu">5</span>);
+
+<span class="cm">// ⑤ Stream.iterate() — dãy số</span>
+<span class="ty">Stream</span>&lt;<span class="ty">Integer</span>&gt; nums = <span class="ty">Stream</span>.<span class="mt">iterate</span>(<span class="nu">0</span>, n -> n + <span class="nu">2</span>).<span class="mt">limit</span>(<span class="nu">10</span>); <span class="cm">// 0,2,4,6...18</span>
+
+<span class="cm">// ⑥ IntStream, LongStream, DoubleStream (primitive)</span>
+<span class="ty">IntStream</span> range = <span class="ty">IntStream</span>.<span class="mt">rangeClosed</span>(<span class="nu">1</span>, <span class="nu">100</span>); <span class="cm">// 1 đến 100</span>
+
+<span class="cm">// ⑦ Từ file</span>
+<span class="ty">Stream</span>&lt;<span class="ty">String</span>&gt; lines = <span class="ty">Files</span>.<span class="mt">lines</span>(<span class="ty">Path</span>.<span class="mt">of</span>(<span class="st">"data.txt"</span>));</pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#f97316;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Intermediate Operations — Phép biến đổi
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr><th>Operation</th><th>Mô tả</th><th>Ví dụ</th><th>Trả về</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr><td><code>filter(pred)</code></td><td>Lọc phần tử thoả điều kiện</td><td><code>filter(x -> x > 5)</code></td><td>Stream&lt;T&gt;</td></tr>
+                        <tr><td><code>map(func)</code></td><td>Biến đổi từng phần tử</td><td><code>map(String::toUpperCase)</code></td><td>Stream&lt;R&gt;</td></tr>
+                        <tr><td><code>flatMap(func)</code></td><td>Map rồi flatten (1 cấp)</td><td><code>flatMap(Collection::stream)</code></td><td>Stream&lt;R&gt;</td></tr>
+                        <tr><td><code>distinct()</code></td><td>Loại trùng (dùng equals)</td><td><code>distinct()</code></td><td>Stream&lt;T&gt;</td></tr>
+                        <tr><td><code>sorted(comp?)</code></td><td>Sắp xếp</td><td><code>sorted(Comparator.reverseOrder())</code></td><td>Stream&lt;T&gt;</td></tr>
+                        <tr><td><code>limit(n)</code></td><td>Lấy tối đa n phần tử</td><td><code>limit(10)</code></td><td>Stream&lt;T&gt;</td></tr>
+                        <tr><td><code>skip(n)</code></td><td>Bỏ qua n phần tử đầu</td><td><code>skip(5)</code></td><td>Stream&lt;T&gt;</td></tr>
+                        <tr><td><code>peek(action)</code></td><td>Debug — xem từng phần tử</td><td><code>peek(System.out::println)</code></td><td>Stream&lt;T&gt;</td></tr>
+                        <tr><td><code>mapToInt/Long/Double</code></td><td>Chuyển sang primitive stream</td><td><code>mapToInt(String::length)</code></td><td>IntStream</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>flatMap_example.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// flatMap: mỗi order có nhiều items → gộp tất cả items</span>
+<span class="ty">List</span>&lt;<span class="ty">Order</span>&gt; orders = getOrders();
+
+<span class="ty">List</span>&lt;<span class="ty">Item</span>&gt; allItems = orders.<span class="mt">stream</span>()
+    .<span class="mt">flatMap</span>(order -> order.<span class="mt">getItems</span>().<span class="mt">stream</span>())  <span class="cm">// Stream&lt;List&lt;Item&gt;&gt; → Stream&lt;Item&gt;</span>
+    .<span class="mt">filter</span>(<span class="ty">Item</span>::<span class="mt">isAvailable</span>)
+    .<span class="mt">collect</span>(<span class="ty">Collectors</span>.<span class="mt">toList</span>());
+
+<span class="cm">// So sánh map vs flatMap:</span>
+<span class="ty">List</span>&lt;<span class="ty">String</span>&gt; words = <span class="ty">List</span>.<span class="mt">of</span>(<span class="st">"Hello World"</span>, <span class="st">"Java Stream"</span>);
+
+<span class="cm">// map → Stream&lt;String[]&gt;</span>
+words.<span class="mt">stream</span>().<span class="mt">map</span>(s -> s.<span class="mt">split</span>(<span class="st">" "</span>));  <span class="cm">// ["Hello","World"], ["Java","Stream"]</span>
+
+<span class="cm">// flatMap → Stream&lt;String&gt;</span>
+words.<span class="mt">stream</span>()
+     .<span class="mt">flatMap</span>(s -> <span class="ty">Arrays</span>.<span class="mt">stream</span>(s.<span class="mt">split</span>(<span class="st">" "</span>)));  <span class="cm">// "Hello","World","Java","Stream"</span></pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#f97316;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Terminal Operations — Kết thúc pipeline
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>TerminalOps.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; nums = <span class="ty">List</span>.<span class="mt">of</span>(<span class="nu">3</span>,<span class="nu">1</span>,<span class="nu">4</span>,<span class="nu">1</span>,<span class="nu">5</span>,<span class="nu">9</span>,<span class="nu">2</span>,<span class="nu">6</span>);
+
+<span class="cm">// collect() — thu thập kết quả</span>
+<span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; evens = nums.<span class="mt">stream</span>()
+    .<span class="mt">filter</span>(n -> n % <span class="nu">2</span> == <span class="nu">0</span>)
+    .<span class="mt">collect</span>(<span class="ty">Collectors</span>.<span class="mt">toList</span>());          <span class="cm">// [4, 2, 6]</span>
+
+<span class="cm">// count(), sum, min, max</span>
+<span class="kw">long</span> count   = nums.<span class="mt">stream</span>().<span class="mt">filter</span>(n -> n > <span class="nu">3</span>).<span class="mt">count</span>();        <span class="cm">// 4</span>
+<span class="kw">int</span>  sum     = nums.<span class="mt">stream</span>().<span class="mt">mapToInt</span>(<span class="ty">Integer</span>::<span class="mt">intValue</span>).<span class="mt">sum</span>(); <span class="cm">// 31</span>
+<span class="ty">Optional</span>&lt;<span class="ty">Integer</span>&gt; max = nums.<span class="mt">stream</span>().<span class="mt">max</span>(<span class="ty">Integer</span>::<span class="mt">compareTo</span>);  <span class="cm">// 9</span>
+
+<span class="cm">// reduce() — gộp lại thành 1 giá trị</span>
+<span class="kw">int</span> product = nums.<span class="mt">stream</span>()
+    .<span class="mt">reduce</span>(<span class="nu">1</span>, (a, b) -> a * b);  <span class="cm">// 1*3*1*4*... = 6480</span>
+
+<span class="cm">// anyMatch / allMatch / noneMatch</span>
+<span class="kw">boolean</span> hasNine  = nums.<span class="mt">stream</span>().<span class="mt">anyMatch</span>(n -> n == <span class="nu">9</span>);   <span class="cm">// true</span>
+<span class="kw">boolean</span> allPos   = nums.<span class="mt">stream</span>().<span class="mt">allMatch</span>(n -> n > <span class="nu">0</span>);    <span class="cm">// true</span>
+<span class="kw">boolean</span> noneNeg  = nums.<span class="mt">stream</span>().<span class="mt">noneMatch</span>(n -> n < <span class="nu">0</span>);   <span class="cm">// true</span>
+
+<span class="cm">// findFirst / findAny</span>
+<span class="ty">Optional</span>&lt;<span class="ty">Integer</span>&gt; first = nums.<span class="mt">stream</span>().<span class="mt">filter</span>(n -> n > <span class="nu">4</span>).<span class="mt">findFirst</span>();
+
+<span class="cm">// forEach</span>
+nums.<span class="mt">stream</span>().<span class="mt">forEach</span>(<span class="ty">System</span>.out::<span class="mt">println</span>);</pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#f97316;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Collectors — Thu thập nâng cao
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>Collectors_Advanced.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt; employees = getEmployees();
+
+<span class="cm">// groupingBy — nhóm theo phòng ban</span>
+<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt;&gt; byDept = employees.<span class="mt">stream</span>()
+    .<span class="mt">collect</span>(<span class="ty">Collectors</span>.<span class="mt">groupingBy</span>(<span class="ty">Employee</span>::<span class="mt">getDepartment</span>));
+
+<span class="cm">// groupingBy + counting — đếm theo phòng ban</span>
+<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Long</span>&gt; countByDept = employees.<span class="mt">stream</span>()
+    .<span class="mt">collect</span>(<span class="ty">Collectors</span>.<span class="mt">groupingBy</span>(
+        <span class="ty">Employee</span>::<span class="mt">getDepartment</span>,
+        <span class="ty">Collectors</span>.<span class="mt">counting</span>()
+    ));
+
+<span class="cm">// partitioningBy — chia 2 nhóm (true/false)</span>
+<span class="ty">Map</span>&lt;<span class="ty">Boolean</span>, <span class="ty">List</span>&lt;<span class="ty">Employee</span>&gt;&gt; seniorJunior = employees.<span class="mt">stream</span>()
+    .<span class="mt">collect</span>(<span class="ty">Collectors</span>.<span class="mt">partitioningBy</span>(e -> e.<span class="mt">getSalary</span>() > <span class="nu">50000</span>));
+
+<span class="cm">// joining — nối chuỗi</span>
+<span class="ty">String</span> names = employees.<span class="mt">stream</span>()
+    .<span class="mt">map</span>(<span class="ty">Employee</span>::<span class="mt">getName</span>)
+    .<span class="mt">collect</span>(<span class="ty">Collectors</span>.<span class="mt">joining</span>(<span class="st">", "</span>, <span class="st">"["</span>, <span class="st">"]"</span>));  <span class="cm">// [Alice, Bob, Carol]</span>
+
+<span class="cm">// toMap — chuyển sang Map</span>
+<span class="ty">Map</span>&lt;<span class="ty">Integer</span>, <span class="ty">String</span>&gt; idToName = employees.<span class="mt">stream</span>()
+    .<span class="mt">collect</span>(<span class="ty">Collectors</span>.<span class="mt">toMap</span>(<span class="ty">Employee</span>::<span class="mt">getId</span>, <span class="ty">Employee</span>::<span class="mt">getName</span>));
+
+<span class="cm">// summarizingInt — thống kê toàn diện</span>
+<span class="ty">IntSummaryStatistics</span> stats = employees.<span class="mt">stream</span>()
+    .<span class="mt">collect</span>(<span class="ty">Collectors</span>.<span class="mt">summarizingInt</span>(<span class="ty">Employee</span>::<span class="mt">getSalary</span>));
+<span class="cm">// stats.getAverage(), getMin(), getMax(), getSum(), getCount()</span></pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#f97316;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Parallel Stream — Xử lý song song
+                </div>
+
+                <div class="info-box info-warn">
+                    <span class="icon">⚠️</span>
+                    <p>Parallel Stream không phải lúc nào cũng nhanh hơn! Chỉ hiệu quả khi: dữ liệu lớn (hàng nghìn phần tử+), tác vụ CPU-intensive, không có shared mutable state, collection hỗ trợ spliterator tốt (ArrayList, array).</p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>ParallelStream.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// Parallel stream: thêm .parallel() hoặc dùng .parallelStream()</span>
+<span class="kw">long</span> sum = <span class="ty">LongStream</span>.<span class="mt">rangeClosed</span>(<span class="nu">1</span>, <span class="nu">1_000_000</span>)
+    .<span class="mt">parallel</span>()
+    .<span class="mt">sum</span>();  <span class="cm">// Tự chia tác vụ cho các CPU core</span>
+
+<span class="cm">// ❌ Sai: dùng shared mutable state trong parallel stream</span>
+<span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; badResult = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+nums.<span class="mt">parallelStream</span>()
+    .<span class="mt">forEach</span>(badResult::<span class="mt">add</span>);  <span class="cm">// ⚠️ Race condition!</span>
+
+<span class="cm">// ✅ Đúng: dùng collect() thread-safe</span>
+<span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; goodResult = nums.<span class="mt">parallelStream</span>()
+    .<span class="mt">filter</span>(n -> n % <span class="nu">2</span> == <span class="nu">0</span>)
+    .<span class="mt">collect</span>(<span class="ty">Collectors</span>.<span class="mt">toList</span>());  <span class="cm">// ✅ An toàn</span></pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#f97316;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Ví dụ thực tế tổng hợp
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>RealWorldStream.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// Bài toán: Từ danh sách đơn hàng, tìm top 5 sản phẩm bán chạy nhất
+// trong tháng này, sắp xếp theo doanh thu giảm dần</span>
+
+<span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Double</span>&gt; top5Products = orders.<span class="mt">stream</span>()
+    .<span class="mt">filter</span>(o -> o.<span class="mt">getDate</span>().<span class="mt">getMonth</span>() == <span class="ty">LocalDate</span>.<span class="mt">now</span>().<span class="mt">getMonth</span>())
+    .<span class="mt">flatMap</span>(o -> o.<span class="mt">getItems</span>().<span class="mt">stream</span>())   <span class="cm">// Order → OrderItem</span>
+    .<span class="mt">collect</span>(<span class="ty">Collectors</span>.<span class="mt">groupingBy</span>(
+        <span class="ty">OrderItem</span>::<span class="mt">getProductName</span>,
+        <span class="ty">Collectors</span>.<span class="mt">summingDouble</span>(<span class="ty">OrderItem</span>::<span class="mt">getRevenue</span>)
+    ))                                          <span class="cm">// Map&lt;productName, totalRevenue&gt;</span>
+    .<span class="mt">entrySet</span>().<span class="mt">stream</span>()
+    .<span class="mt">sorted</span>(<span class="ty">Map</span>.<span class="ty">Entry</span>.&lt;<span class="ty">String</span>,<span class="ty">Double</span>&gt;<span class="mt">comparingByValue</span>().<span class="mt">reversed</span>())
+    .<span class="mt">limit</span>(<span class="nu">5</span>)
+    .<span class="mt">collect</span>(<span class="ty">Collectors</span>.<span class="mt">toMap</span>(
+        <span class="ty">Map</span>.<span class="ty">Entry</span>::<span class="mt">getKey</span>,
+        <span class="ty">Map</span>.<span class="ty">Entry</span>::<span class="mt">getValue</span>,
+        (a, b) -> a,
+        <span class="ty">LinkedHashMap</span>::<span class="kw">new</span>   <span class="cm">// giữ thứ tự</span>
+    ));</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════
+             SECTION 2 — GENERICS & WILDCARDS
+        ══════════════════════════════════════════ -->
+        <section class="section" id="s2">
+            <div class="section-header">
+                <div class="section-icon bg2" style="font-size:22px">🔷</div>
+                <div class="section-meta">
+                    <div class="section-number">Chủ đề 02</div>
+                    <div class="section-title c2">Generics nâng cao & Wildcards</div>
+                    <div class="section-desc">Type safety tại compile-time, wildcards, bounded types và type erasure</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#38bdf8;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Tại sao cần Generics?
+                </div>
+                <p>Generics cho phép định nghĩa class, interface, method với <strong>kiểu dữ liệu là tham số</strong>. Thay vì viết code riêng cho từng kiểu, bạn viết một lần và Java đảm bảo type safety tại compile-time.</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>WhyGenerics.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// ❌ Không có generics — mất type safety</span>
+<span class="ty">List</span> rawList = <span class="kw">new</span> <span class="ty">ArrayList</span>();
+rawList.<span class="mt">add</span>(<span class="st">"hello"</span>);
+rawList.<span class="mt">add</span>(<span class="nu">42</span>);       <span class="cm">// OK lúc compile, nhưng...</span>
+<span class="ty">String</span> s = (<span class="ty">String</span>) rawList.<span class="mt">get</span>(<span class="nu">1</span>); <span class="cm">// 💥 ClassCastException lúc runtime!</span>
+
+<span class="cm">// ✅ Có generics — lỗi bị bắt ngay khi compile</span>
+<span class="ty">List</span>&lt;<span class="ty">String</span>&gt; typedList = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+typedList.<span class="mt">add</span>(<span class="st">"hello"</span>);
+<span class="cm">// typedList.add(42);  ← Compile error: incompatible types</span>
+<span class="ty">String</span> val = typedList.<span class="mt">get</span>(<span class="nu">0</span>); <span class="cm">// Không cần cast</span>
+
+<span class="cm">// Generic class: Pair&lt;A, B&gt;</span>
+<span class="kw">public class</span> <span class="ty">Pair</span>&lt;<span class="ty">A</span>, <span class="ty">B</span>&gt; {
+    <span class="kw">private final</span> <span class="ty">A</span> first;
+    <span class="kw">private final</span> <span class="ty">B</span> second;
+
+    <span class="kw">public</span> <span class="ty">Pair</span>(<span class="ty">A</span> first, <span class="ty">B</span> second) {
+        <span class="kw">this</span>.first = first;
+        <span class="kw">this</span>.second = second;
+    }
+
+    <span class="kw">public</span> <span class="ty">A</span> <span class="mt">getFirst</span>()  { <span class="kw">return</span> first; }
+    <span class="kw">public</span> <span class="ty">B</span> <span class="mt">getSecond</span>() { <span class="kw">return</span> second; }
+}
+
+<span class="ty">Pair</span>&lt;<span class="ty">String</span>, <span class="ty">Integer</span>&gt; p = <span class="kw">new</span> <span class="ty">Pair</span>&lt;&gt;(<span class="st">"age"</span>, <span class="nu">25</span>);
+<span class="ty">String</span> key = p.<span class="mt">getFirst</span>();   <span class="cm">// "age"</span>
+<span class="kw">int</span>    age = p.<span class="mt">getSecond</span>();  <span class="cm">// 25</span></pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#38bdf8;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Bounded Type Parameters — Giới hạn kiểu
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>BoundedTypes.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// Upper Bound: T extends Comparable — T phải implement Comparable</span>
+<span class="kw">public static</span> &lt;<span class="ty">T</span> <span class="kw">extends</span> <span class="ty">Comparable</span>&lt;<span class="ty">T</span>&gt;&gt; <span class="ty">T</span> <span class="mt">findMax</span>(<span class="ty">List</span>&lt;<span class="ty">T</span>&gt; list) {
+    <span class="kw">return</span> list.<span class="mt">stream</span>()
+               .<span class="mt">max</span>(<span class="ty">Comparator</span>.<span class="mt">naturalOrder</span>())
+               .<span class="mt">orElseThrow</span>();
+}
+
+<span class="mt">findMax</span>(<span class="ty">List</span>.<span class="mt">of</span>(<span class="nu">3</span>, <span class="nu">1</span>, <span class="nu">7</span>, <span class="nu">2</span>));  <span class="cm">// 7</span>
+<span class="mt">findMax</span>(<span class="ty">List</span>.<span class="mt">of</span>(<span class="st">"B"</span>, <span class="st">"A"</span>, <span class="st">"C"</span>)); <span class="cm">// "C"</span>
+
+<span class="cm">// Multiple bounds: T phải là Animal VÀ implement Serializable</span>
+<span class="kw">public</span> &lt;<span class="ty">T</span> <span class="kw">extends</span> <span class="ty">Animal</span> &amp; <span class="ty">Serializable</span>&gt; <span class="kw">void</span> <span class="mt">save</span>(<span class="ty">T</span> animal) { ... }
+
+<span class="cm">// Generic method — tính tổng list số</span>
+<span class="kw">public static</span> &lt;<span class="ty">N</span> <span class="kw">extends</span> <span class="ty">Number</span>&gt; <span class="kw">double</span> <span class="mt">sumList</span>(<span class="ty">List</span>&lt;<span class="ty">N</span>&gt; list) {
+    <span class="kw">return</span> list.<span class="mt">stream</span>()
+               .<span class="mt">mapToDouble</span>(<span class="ty">Number</span>::<span class="mt">doubleValue</span>)
+               .<span class="mt">sum</span>();
+}
+
+<span class="mt">sumList</span>(<span class="ty">List</span>.<span class="mt">of</span>(<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>));       <span class="cm">// Integer — OK</span>
+<span class="mt">sumList</span>(<span class="ty">List</span>.<span class="mt">of</span>(<span class="nu">1.5</span>, <span class="nu">2.5</span>));     <span class="cm">// Double  — OK</span></pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#38bdf8;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Wildcards — ? và PECS
+                </div>
+                <p>Wildcard <code>?</code> đại diện cho "kiểu không xác định". Có 3 dạng chính:</p>
+
+                <div class="card-grid">
+                    <div class="card" style="border-color:rgba(56,189,248,0.3)">
+                        <div class="card-title c2">? (Unbounded)</div>
+                        <div class="card-body"><code>List&lt;?&gt;</code> — Có thể là bất kỳ kiểu nào. Chỉ đọc được (get), không thêm được (add).</div>
+                    </div>
+                    <div class="card" style="border-color:rgba(52,211,153,0.3)">
+                        <div class="card-title c4">? extends T (Upper)</div>
+                        <div class="card-body"><code>List&lt;? extends Number&gt;</code> — Có thể là Number hoặc subtype. Dùng để <strong>đọc (Producer)</strong>.</div>
+                    </div>
+                    <div class="card" style="border-color:rgba(251,113,133,0.3)">
+                        <div class="card-title c5">? super T (Lower)</div>
+                        <div class="card-body"><code>List&lt;? super Integer&gt;</code> — Có thể là Integer hoặc supertype. Dùng để <strong>ghi (Consumer)</strong>.</div>
+                    </div>
+                </div>
+
+                <div class="info-box info-tip">
+                    <span class="icon">💡</span>
+                    <p><strong>PECS Rule</strong> — Producer Extends, Consumer Super: Nếu collection <em>cung cấp</em> dữ liệu ra ngoài → dùng <code>extends</code>. Nếu collection <em>nhận</em> dữ liệu vào → dùng <code>super</code>.</p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>PECS_Wildcards.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// PRODUCER EXTENDS — đọc từ source để tính tổng</span>
+<span class="cm">// source "sản xuất" Number để ta đọc → extends</span>
+<span class="kw">public static</span> <span class="kw">double</span> <span class="mt">sumProducer</span>(<span class="ty">List</span>&lt;? <span class="kw">extends</span> <span class="ty">Number</span>&gt; source) {
+    <span class="kw">double</span> total = <span class="nu">0</span>;
+    <span class="kw">for</span> (<span class="ty">Number</span> n : source) total += n.<span class="mt">doubleValue</span>();
+    <span class="kw">return</span> total;
+}
+
+<span class="mt">sumProducer</span>(<span class="ty">List</span>.<span class="mt">of</span>(<span class="nu">1</span>, <span class="nu">2</span>, <span class="nu">3</span>));    <span class="cm">// List&lt;Integer&gt; — OK</span>
+<span class="mt">sumProducer</span>(<span class="ty">List</span>.<span class="mt">of</span>(<span class="nu">1.1</span>, <span class="nu">2.2</span>));  <span class="cm">// List&lt;Double&gt;  — OK</span>
+
+<span class="cm">// CONSUMER SUPER — ghi vào dest</span>
+<span class="cm">// dest "tiêu thụ" Integer ta đưa vào → super</span>
+<span class="kw">public static</span> <span class="kw">void</span> <span class="mt">addNumbers</span>(<span class="ty">List</span>&lt;? <span class="kw">super</span> <span class="ty">Integer</span>&gt; dest) {
+    dest.<span class="mt">add</span>(<span class="nu">1</span>);
+    dest.<span class="mt">add</span>(<span class="nu">2</span>);
+    dest.<span class="mt">add</span>(<span class="nu">3</span>);
+}
+
+<span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; intList    = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+<span class="ty">List</span>&lt;<span class="ty">Number</span>&gt;  numList    = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+<span class="ty">List</span>&lt;<span class="ty">Object</span>&gt;  objList    = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+<span class="mt">addNumbers</span>(intList);  <span class="cm">// OK</span>
+<span class="mt">addNumbers</span>(numList);  <span class="cm">// OK</span>
+<span class="mt">addNumbers</span>(objList);  <span class="cm">// OK</span>
+
+<span class="cm">// Ví dụ thực tế — copy từ src sang dest (giống Collections.copy)</span>
+<span class="kw">public static</span> &lt;<span class="ty">T</span>&gt; <span class="kw">void</span> <span class="mt">copy</span>(
+    <span class="ty">List</span>&lt;? <span class="kw">extends</span> <span class="ty">T</span>&gt; src,    <span class="cm">// Producer (đọc)</span>
+    <span class="ty">List</span>&lt;? <span class="kw">super</span> <span class="ty">T</span>&gt; dest      <span class="cm">// Consumer (ghi)</span>
+) {
+    <span class="kw">for</span> (<span class="ty">T</span> item : src) dest.<span class="mt">add</span>(item);
+}</pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#38bdf8;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Type Erasure — Thực tế ở runtime
+                </div>
+
+                <div class="info-box info-note">
+                    <span class="icon">ℹ️</span>
+                    <p>Java sử dụng <strong>Type Erasure</strong>: thông tin generic bị xóa hoàn toàn sau compile-time. Tại runtime, <code>List&lt;String&gt;</code> và <code>List&lt;Integer&gt;</code> đều là <code>List</code>. Điều này giải thích tại sao không thể dùng <code>instanceof List&lt;String&gt;</code> hay tạo <code>new T[]</code>.</p>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>TypeErasure.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// Compile time → Runtime (sau erasure)</span>
+<span class="ty">List</span>&lt;<span class="ty">String</span>&gt; strings;   <span class="cm">→  List strings;</span>
+<span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; ints;    <span class="cm">→  List ints;</span>
+
+<span class="cm">// Hệ quả: không thể phân biệt tại runtime</span>
+<span class="ty">List</span>&lt;<span class="ty">String</span>&gt; ls = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+<span class="ty">List</span>&lt;<span class="ty">Integer</span>&gt; li = <span class="kw">new</span> <span class="ty">ArrayList</span>&lt;&gt;();
+<span class="ty">System</span>.out.<span class="mt">println</span>(ls.<span class="mt">getClass</span>() == li.<span class="mt">getClass</span>()); <span class="cm">// true!</span>
+
+<span class="cm">// ❌ Không được:</span>
+<span class="kw">if</span> (obj <span class="kw">instanceof</span> <span class="ty">List</span>&lt;<span class="ty">String</span>&gt;) {} <span class="cm">// Compile error</span>
+<span class="ty">T</span>[] arr = <span class="kw">new</span> <span class="ty">T</span>[<span class="nu">10</span>];               <span class="cm">// Compile error</span>
+
+<span class="cm">// ✅ Workaround: truyền Class&lt;T&gt; vào</span>
+<span class="kw">public</span> &lt;<span class="ty">T</span>&gt; <span class="ty">T</span> <span class="mt">deserialize</span>(<span class="ty">String</span> json, <span class="ty">Class</span>&lt;<span class="ty">T</span>&gt; type) {
+    <span class="kw">return</span> objectMapper.<span class="mt">readValue</span>(json, type);
+}
+<span class="ty">User</span> user = <span class="mt">deserialize</span>(jsonStr, <span class="ty">User</span>.<span class="kw">class</span>);</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════
+             SECTION 3 — AOP
+        ══════════════════════════════════════════ -->
+        <section class="section" id="s3">
+            <div class="section-header">
+                <div class="section-icon bg3" style="font-size:22px">🔀</div>
+                <div class="section-meta">
+                    <div class="section-number">Chủ đề 03</div>
+                    <div class="section-title c3">Aspect-Oriented Programming (AOP)</div>
+                    <div class="section-desc">Tách cross-cutting concerns ra khỏi business logic — logging, security, transaction</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#a78bfa;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Vấn đề AOP giải quyết
+                </div>
+                <p>Trong ứng dụng thực tế, có những <strong>cross-cutting concerns</strong> — chức năng lặp đi lặp lại trên nhiều module như logging, security, transaction, caching. AOP tách những concern này ra thành <strong>Aspect</strong> riêng, giữ cho business code sạch.</p>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-icon">📝</div>
+                        <div class="card-title">Logging</div>
+                        <div class="card-body">Ghi log trước/sau method — không cần thêm log vào từng service.</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🔐</div>
+                        <div class="card-title">Security</div>
+                        <div class="card-body">Kiểm tra quyền truy cập trước khi thực thi method.</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💳</div>
+                        <div class="card-title">Transaction</div>
+                        <div class="card-body">Tự động begin/commit/rollback transaction quanh method.</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">⚡</div>
+                        <div class="card-title">Caching</div>
+                        <div class="card-body">Cache kết quả method, trả về từ cache thay vì gọi lại.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#a78bfa;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Các khái niệm cốt lõi
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Khái niệm</th><th>Định nghĩa</th><th>Ví dụ</th></tr></thead>
+                        <tbody>
+                        <tr><td><strong>Aspect</strong></td><td>Module chứa cross-cutting concern</td><td>LoggingAspect, SecurityAspect</td></tr>
+                        <tr><td><strong>Advice</strong></td><td>Hành động aspect thực hiện (WHEN)</td><td>@Before, @After, @Around</td></tr>
+                        <tr><td><strong>Pointcut</strong></td><td>Điều kiện xác định WHERE áp dụng advice</td><td><code>execution(* com.app.service.*.*(..))</code></td></tr>
+                        <tr><td><strong>Join Point</strong></td><td>Điểm cụ thể trong luồng thực thi</td><td>Method call, exception throw</td></tr>
+                        <tr><td><strong>Weaving</strong></td><td>Ghép aspect vào code target</td><td>Compile-time / Load-time / Runtime</td></tr>
+                        <tr><td><strong>Target Object</strong></td><td>Object bị aspect áp dụng lên</td><td>UserService proxy</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#a78bfa;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Các loại Advice
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>LoggingAspect.java (Spring AOP)</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="an">@Aspect</span>
+<span class="an">@Component</span>
+<span class="kw">public class</span> <span class="ty">LoggingAspect</span> {
+
+    <span class="cm">// Pointcut: tất cả method trong package service</span>
+    <span class="an">@Pointcut</span>(<span class="st">"execution(* com.app.service.*.*(..))"</span>)
+    <span class="kw">public void</span> <span class="mt">serviceLayer</span>() {}
+
+    <span class="cm">// ① @Before — chạy TRƯỚC method</span>
+    <span class="an">@Before</span>(<span class="st">"serviceLayer()"</span>)
+    <span class="kw">public void</span> <span class="mt">logBefore</span>(<span class="ty">JoinPoint</span> jp) {
+        <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="st">"▶ Calling: "</span> + jp.<span class="mt">getSignature</span>().<span class="mt">getName</span>());
+    }
+
+    <span class="cm">// ② @AfterReturning — chạy SAU khi return bình thường</span>
+    <span class="an">@AfterReturning</span>(pointcut = <span class="st">"serviceLayer()"</span>, returning = <span class="st">"result"</span>)
+    <span class="kw">public void</span> <span class="mt">logAfterReturn</span>(<span class="ty">JoinPoint</span> jp, <span class="ty">Object</span> result) {
+        <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="st">"✅ Return: "</span> + result);
+    }
+
+    <span class="cm">// ③ @AfterThrowing — chạy KHI ném exception</span>
+    <span class="an">@AfterThrowing</span>(pointcut = <span class="st">"serviceLayer()"</span>, throwing = <span class="st">"ex"</span>)
+    <span class="kw">public void</span> <span class="mt">logException</span>(<span class="ty">JoinPoint</span> jp, <span class="ty">Exception</span> ex) {
+        <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="st">"❌ Exception in: "</span> + jp.<span class="mt">getSignature</span>() + <span class="st">" — "</span> + ex.<span class="mt">getMessage</span>());
+    }
+
+    <span class="cm">// ④ @After — chạy SAU BẤT KỂ (finally)</span>
+    <span class="an">@After</span>(<span class="st">"serviceLayer()"</span>)
+    <span class="kw">public void</span> <span class="mt">logFinally</span>(<span class="ty">JoinPoint</span> jp) {
+        <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="st">"⏹ Done: "</span> + jp.<span class="mt">getSignature</span>().<span class="mt">getName</span>());
+    }
+
+    <span class="cm">// ⑤ @Around — mạnh nhất, bao toàn bộ method</span>
+    <span class="an">@Around</span>(<span class="st">"serviceLayer()"</span>)
+    <span class="kw">public</span> <span class="ty">Object</span> <span class="mt">measureTime</span>(<span class="ty">ProceedingJoinPoint</span> pjp) <span class="kw">throws</span> <span class="ty">Throwable</span> {
+        <span class="kw">long</span> start = <span class="ty">System</span>.<span class="mt">currentTimeMillis</span>();
+        <span class="kw">try</span> {
+            <span class="ty">Object</span> result = pjp.<span class="mt">proceed</span>();  <span class="cm">// gọi method thực sự</span>
+            <span class="kw">return</span> result;
+        } <span class="kw">finally</span> {
+            <span class="kw">long</span> elapsed = <span class="ty">System</span>.<span class="mt">currentTimeMillis</span>() - start;
+            <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="st">"⏱ "</span> + pjp.<span class="mt">getSignature</span>() + <span class="st">" took "</span> + elapsed + <span class="st">"ms"</span>);
+        }
+    }
+}</pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#a78bfa;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Ví dụ thực tế: Custom Annotation + AOP
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>RateLimiter_AOP.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// ① Định nghĩa custom annotation</span>
+<span class="an">@Retention</span>(<span class="ty">RetentionPolicy</span>.<span class="ty">RUNTIME</span>)
+<span class="an">@Target</span>(<span class="ty">ElementType</span>.<span class="ty">METHOD</span>)
+<span class="kw">public @interface</span> <span class="ty">RateLimit</span> {
+    <span class="kw">int</span> <span class="mt">maxRequests</span>() <span class="kw">default</span> <span class="nu">100</span>;
+    <span class="kw">int</span> <span class="mt">perSeconds</span>()  <span class="kw">default</span> <span class="nu">60</span>;
+}
+
+<span class="cm">// ② Dùng annotation trên method</span>
+<span class="an">@Service</span>
+<span class="kw">public class</span> <span class="ty">PaymentService</span> {
+
+    <span class="an">@RateLimit</span>(maxRequests = <span class="nu">10</span>, perSeconds = <span class="nu">60</span>)
+    <span class="kw">public</span> <span class="ty">Receipt</span> <span class="mt">processPayment</span>(<span class="ty">Payment</span> payment) {
+        <span class="cm">// chỉ business logic, không có rate-limit code ở đây</span>
+        <span class="kw">return</span> paymentGateway.<span class="mt">charge</span>(payment);
+    }
+}
+
+<span class="cm">// ③ Aspect xử lý @RateLimit tự động</span>
+<span class="an">@Aspect</span> <span class="an">@Component</span>
+<span class="kw">public class</span> <span class="ty">RateLimitAspect</span> {
+
+    <span class="kw">private final</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">RateLimiter</span>&gt; limiters = <span class="kw">new</span> <span class="ty">ConcurrentHashMap</span>&lt;&gt;();
+
+    <span class="an">@Around</span>(<span class="st">"@annotation(rateLimit)"</span>)
+    <span class="kw">public</span> <span class="ty">Object</span> <span class="mt">enforceRateLimit</span>(<span class="ty">ProceedingJoinPoint</span> pjp, <span class="ty">RateLimit</span> rateLimit)
+        <span class="kw">throws</span> <span class="ty">Throwable</span> {
+
+        <span class="ty">String</span> key = pjp.<span class="mt">getSignature</span>().<span class="mt">toLongString</span>();
+        <span class="ty">RateLimiter</span> limiter = limiters.<span class="mt">computeIfAbsent</span>(key,
+            k -> <span class="ty">RateLimiter</span>.<span class="mt">create</span>(rateLimit.<span class="mt">maxRequests</span>() / (<span class="kw">double</span>) rateLimit.<span class="mt">perSeconds</span>()));
+
+        <span class="kw">if</span> (!limiter.<span class="mt">tryAcquire</span>()) {
+            <span class="kw">throw new</span> <span class="ty">TooManyRequestsException</span>(<span class="st">"Rate limit exceeded"</span>);
+        }
+        <span class="kw">return</span> pjp.<span class="mt">proceed</span>();
+    }
+}</pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════
+             SECTION 4 — REFLECTION
+        ══════════════════════════════════════════ -->
+        <section class="section" id="s4">
+            <div class="section-header">
+                <div class="section-icon bg4" style="font-size:22px">🔍</div>
+                <div class="section-meta">
+                    <div class="section-number">Chủ đề 04</div>
+                    <div class="section-title c4">Java Reflection API</div>
+                    <div class="section-desc">Kiểm tra và thao tác cấu trúc class tại runtime — meta-programming trong Java</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#34d399;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Reflection là gì?
+                </div>
+                <p>Reflection cho phép chương trình <strong>kiểm tra và thao tác cấu trúc của chính nó</strong> tại runtime: đọc class name, list fields/methods, gọi method theo tên, tạo object mà không biết class tại compile time. Đây là nền tảng của Spring, JPA, Jackson, JUnit.</p>
+
+                <div class="info-box info-warn">
+                    <span class="icon">⚠️</span>
+                    <p>Reflection có chi phí hiệu năng cao hơn gọi trực tiếp và bypass các kiểm tra compile-time. Chỉ dùng khi thực sự cần (framework, serialization, DI container).</p>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#34d399;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Class Object — Cửa vào Reflection
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>ReflectionBasics.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// 3 cách lấy Class object</span>
+<span class="ty">Class</span>&lt;<span class="ty">String</span>&gt; c1 = <span class="ty">String</span>.<span class="kw">class</span>;                     <span class="cm">// compile-time</span>
+<span class="ty">Class</span>&lt;?&gt;      c2 = <span class="st">"hello"</span>.<span class="mt">getClass</span>();               <span class="cm">// từ instance</span>
+<span class="ty">Class</span>&lt;?&gt;      c3 = <span class="ty">Class</span>.<span class="mt">forName</span>(<span class="st">"java.lang.String"</span>); <span class="cm">// từ tên đầy đủ</span>
+
+<span class="cm">// Đọc thông tin class</span>
+<span class="ty">Class</span>&lt;?&gt; clazz = <span class="ty">User</span>.<span class="kw">class</span>;
+<span class="ty">System</span>.out.<span class="mt">println</span>(clazz.<span class="mt">getName</span>());          <span class="cm">// com.app.model.User</span>
+<span class="ty">System</span>.out.<span class="mt">println</span>(clazz.<span class="mt">getSimpleName</span>());    <span class="cm">// User</span>
+<span class="ty">System</span>.out.<span class="mt">println</span>(clazz.<span class="mt">getSuperclass</span>());   <span class="cm">// class java.lang.Object</span>
+<span class="ty">System</span>.out.<span class="mt">println</span>(<span class="ty">Arrays</span>.<span class="mt">toString</span>(clazz.<span class="mt">getInterfaces</span>()));
+
+<span class="cm">// Lấy Fields</span>
+<span class="ty">Field</span>[] publicFields  = clazz.<span class="mt">getFields</span>();       <span class="cm">// public + inherited</span>
+<span class="ty">Field</span>[] allFields     = clazz.<span class="mt">getDeclaredFields</span>(); <span class="cm">// tất cả kể cả private</span>
+
+<span class="cm">// Lấy Methods</span>
+<span class="ty">Method</span>[] methods     = clazz.<span class="mt">getDeclaredMethods</span>();
+
+<span class="cm">// Lấy Constructors</span>
+<span class="ty">Constructor</span>&lt;?&gt;[] ctors = clazz.<span class="mt">getDeclaredConstructors</span>();</pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#34d399;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Tạo Object và Gọi Method qua Reflection
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>ReflectionInvoke.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// Tạo object từ constructor</span>
+<span class="ty">Constructor</span>&lt;<span class="ty">User</span>&gt; ctor = <span class="ty">User</span>.<span class="kw">class</span>.<span class="mt">getDeclaredConstructor</span>(<span class="ty">String</span>.<span class="kw">class</span>, <span class="kw">int</span>.<span class="kw">class</span>);
+ctor.<span class="mt">setAccessible</span>(<span class="kw">true</span>);  <span class="cm">// bypass private</span>
+<span class="ty">User</span> user = ctor.<span class="mt">newInstance</span>(<span class="st">"Alice"</span>, <span class="nu">30</span>);
+
+<span class="cm">// Đọc/ghi field private</span>
+<span class="ty">Field</span> nameField = <span class="ty">User</span>.<span class="kw">class</span>.<span class="mt">getDeclaredField</span>(<span class="st">"name"</span>);
+nameField.<span class="mt">setAccessible</span>(<span class="kw">true</span>);
+<span class="ty">String</span> name = (<span class="ty">String</span>) nameField.<span class="mt">get</span>(user);   <span class="cm">// đọc</span>
+nameField.<span class="mt">set</span>(user, <span class="st">"Bob"</span>);                  <span class="cm">// ghi</span>
+
+<span class="cm">// Gọi method theo tên</span>
+<span class="ty">Method</span> greet = <span class="ty">User</span>.<span class="kw">class</span>.<span class="mt">getDeclaredMethod</span>(<span class="st">"greet"</span>, <span class="ty">String</span>.<span class="kw">class</span>);
+greet.<span class="mt">setAccessible</span>(<span class="kw">true</span>);
+<span class="ty">Object</span> result = greet.<span class="mt">invoke</span>(user, <span class="st">"World"</span>);   <span class="cm">// gọi user.greet("World")</span>
+
+<span class="cm">// Đọc Annotations trên method</span>
+<span class="kw">for</span> (<span class="ty">Method</span> m : <span class="ty">UserService</span>.<span class="kw">class</span>.<span class="mt">getDeclaredMethods</span>()) {
+    <span class="kw">if</span> (m.<span class="mt">isAnnotationPresent</span>(<span class="ty">Transactional</span>.<span class="kw">class</span>)) {
+        <span class="ty">Transactional</span> tx = m.<span class="mt">getAnnotation</span>(<span class="ty">Transactional</span>.<span class="kw">class</span>);
+        <span class="ty">System</span>.out.<span class="mt">println</span>(m.<span class="mt">getName</span>() + <span class="st">" — propagation: "</span> + tx.<span class="mt">propagation</span>());
+    }
+}</pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#34d399;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Ứng dụng thực tế: Mini Dependency Injection
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>MiniDI.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// Custom @Inject annotation</span>
+<span class="an">@Retention</span>(<span class="ty">RetentionPolicy</span>.<span class="ty">RUNTIME</span>)
+<span class="an">@Target</span>(<span class="ty">ElementType</span>.<span class="ty">FIELD</span>)
+<span class="kw">public @interface</span> <span class="ty">Inject</span> {}
+
+<span class="cm">// DI Container đơn giản</span>
+<span class="kw">public class</span> <span class="ty">Container</span> {
+    <span class="kw">private</span> <span class="ty">Map</span>&lt;<span class="ty">Class</span>&lt;?&gt;, <span class="ty">Object</span>&gt; beans = <span class="kw">new</span> <span class="ty">HashMap</span>&lt;&gt;();
+
+    <span class="kw">public</span> &lt;<span class="ty">T</span>&gt; <span class="ty">T</span> <span class="mt">get</span>(<span class="ty">Class</span>&lt;<span class="ty">T</span>&gt; type) <span class="kw">throws</span> <span class="ty">Exception</span> {
+        <span class="kw">if</span> (beans.<span class="mt">containsKey</span>(type)) <span class="kw">return</span> type.<span class="mt">cast</span>(beans.<span class="mt">get</span>(type));
+
+        <span class="ty">T</span> instance = type.<span class="mt">getDeclaredConstructor</span>().<span class="mt">newInstance</span>();
+
+        <span class="cm">// Inject tất cả field có @Inject</span>
+        <span class="kw">for</span> (<span class="ty">Field</span> f : type.<span class="mt">getDeclaredFields</span>()) {
+            <span class="kw">if</span> (f.<span class="mt">isAnnotationPresent</span>(<span class="ty">Inject</span>.<span class="kw">class</span>)) {
+                f.<span class="mt">setAccessible</span>(<span class="kw">true</span>);
+                f.<span class="mt">set</span>(instance, <span class="mt">get</span>(f.<span class="mt">getType</span>())); <span class="cm">// đệ quy resolve</span>
+            }
+        }
+        beans.<span class="mt">put</span>(type, instance);
+        <span class="kw">return</span> instance;
+    }
+}
+
+<span class="cm">// Sử dụng</span>
+<span class="kw">public class</span> <span class="ty">OrderController</span> {
+    <span class="an">@Inject</span> <span class="ty">OrderService</span> orderService;  <span class="cm">// tự động inject</span>
+    <span class="an">@Inject</span> <span class="ty">UserService</span>  userService;
+}
+
+<span class="ty">Container</span> container = <span class="kw">new</span> <span class="ty">Container</span>();
+<span class="ty">OrderController</span> ctrl = container.<span class="mt">get</span>(<span class="ty">OrderController</span>.<span class="kw">class</span>);
+<span class="cm">// orderService và userService đã được inject tự động!</span></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════
+             SECTION 5 — CompletableFuture
+        ══════════════════════════════════════════ -->
+        <section class="section" id="s5">
+            <div class="section-header">
+                <div class="section-icon bg5" style="font-size:22px">⚡</div>
+                <div class="section-meta">
+                    <div class="section-number">Chủ đề 05</div>
+                    <div class="section-title c5">CompletableFuture</div>
+                    <div class="section-desc">Lập trình bất đồng bộ hiện đại — composition, chaining, error handling</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#fb7185;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Tại sao CompletableFuture?
+                </div>
+                <p><code>Future</code> cũ (Java 5) chỉ cho phép chờ kết quả bằng <code>get()</code> — block thread. <code>CompletableFuture</code> (Java 8) cho phép <strong>compose, chain, combine</strong> nhiều tác vụ async mà không block thread, với API phong phú và error handling linh hoạt.</p>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#fb7185;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Tạo CompletableFuture
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>CF_Creation.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// runAsync — không trả về giá trị (Runnable)</span>
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">Void</span>&gt; f1 = <span class="ty">CompletableFuture</span>.<span class="mt">runAsync</span>(() -> {
+    <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="st">"Running in: "</span> + <span class="ty">Thread</span>.<span class="mt">currentThread</span>().<span class="mt">getName</span>());
+});
+
+<span class="cm">// supplyAsync — có trả về giá trị (Supplier)</span>
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">String</span>&gt; f2 = <span class="ty">CompletableFuture</span>.<span class="mt">supplyAsync</span>(() -> {
+    <span class="cm">// giả lập gọi API mất 1 giây</span>
+    <span class="mt">sleep</span>(<span class="nu">1000</span>);
+    <span class="kw">return</span> <span class="st">"User data from API"</span>;
+});
+
+<span class="cm">// Dùng custom Executor thay vì ForkJoinPool.commonPool()</span>
+<span class="ty">ExecutorService</span> pool = <span class="ty">Executors</span>.<span class="mt">newFixedThreadPool</span>(<span class="nu">10</span>);
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">String</span>&gt; f3 = <span class="ty">CompletableFuture</span>.<span class="mt">supplyAsync</span>(
+    () -> <span class="mt">fetchFromDB</span>(), pool
+);
+
+<span class="cm">// completedFuture — wrap giá trị có sẵn (test, fallback)</span>
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">String</span>&gt; f4 = <span class="ty">CompletableFuture</span>.<span class="mt">completedFuture</span>(<span class="st">"cached value"</span>);</pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#fb7185;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Chaining — Nối chuỗi tác vụ
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Method</th><th>Nhận</th><th>Trả về</th><th>Dùng khi</th></tr></thead>
+                        <tbody>
+                        <tr><td><code>thenApply(fn)</code></td><td>T</td><td>CF&lt;U&gt;</td><td>transform kết quả (như map)</td></tr>
+                        <tr><td><code>thenAccept(consumer)</code></td><td>T</td><td>CF&lt;Void&gt;</td><td>dùng kết quả, không return</td></tr>
+                        <tr><td><code>thenRun(runnable)</code></td><td>—</td><td>CF&lt;Void&gt;</td><td>chạy tiếp, không cần kết quả</td></tr>
+                        <tr><td><code>thenCompose(fn)</code></td><td>T</td><td>CF&lt;U&gt;</td><td>chain CF với CF khác (flatMap)</td></tr>
+                        <tr><td><code>thenCombine(cf, fn)</code></td><td>T, U</td><td>CF&lt;V&gt;</td><td>kết hợp 2 CF độc lập</td></tr>
+                        <tr><td><code>exceptionally(fn)</code></td><td>Throwable</td><td>CF&lt;T&gt;</td><td>handle lỗi, trả fallback</td></tr>
+                        <tr><td><code>handle(fn)</code></td><td>T, Throwable</td><td>CF&lt;U&gt;</td><td>handle cả success lẫn error</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>CF_Chaining.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// thenApply — transform (đồng bộ)</span>
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">Integer</span>&gt; length = <span class="ty">CompletableFuture</span>
+    .<span class="mt">supplyAsync</span>(() -> <span class="st">"Hello World"</span>)
+    .<span class="mt">thenApply</span>(<span class="ty">String</span>::<span class="mt">length</span>);           <span class="cm">// 11</span>
+
+<span class="cm">// thenCompose — chain CF (async, như flatMap)</span>
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">Order</span>&gt; order = <span class="ty">CompletableFuture</span>
+    .<span class="mt">supplyAsync</span>(() -> <span class="mt">getUser</span>(<span class="nu">123</span>))         <span class="cm">// CF&lt;User&gt;</span>
+    .<span class="mt">thenCompose</span>(user -> <span class="mt">getLatestOrder</span>(user)); <span class="cm">// user → CF&lt;Order&gt;</span>
+
+<span class="cm">// thenCombine — kết hợp 2 CF chạy song song</span>
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">String</span>&gt; weather = <span class="ty">CompletableFuture</span>.<span class="mt">supplyAsync</span>(() -> <span class="mt">fetchWeather</span>());
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">String</span>&gt; news    = <span class="ty">CompletableFuture</span>.<span class="mt">supplyAsync</span>(() -> <span class="mt">fetchNews</span>());
+
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">String</span>&gt; dashboard = weather
+    .<span class="mt">thenCombine</span>(news, (w, n) -> <span class="st">"Weather: "</span> + w + <span class="st">", News: "</span> + n);
+<span class="cm">// Cả 2 chạy song song, kết hợp khi cả 2 xong</span>
+
+<span class="cm">// Error handling</span>
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">String</span>&gt; safe = <span class="ty">CompletableFuture</span>
+    .<span class="mt">supplyAsync</span>(() -> <span class="mt">riskyOperation</span>())
+    .<span class="mt">exceptionally</span>(ex -> {
+        <span class="ty">System</span>.err.<span class="mt">println</span>(<span class="st">"Error: "</span> + ex.<span class="mt">getMessage</span>());
+        <span class="kw">return</span> <span class="st">"fallback value"</span>;  <span class="cm">// trả về default thay vì throw</span>
+    })
+    .<span class="mt">handle</span>((result, ex) -> {
+        <span class="kw">if</span> (ex != <span class="kw">null</span>) <span class="kw">return</span> <span class="st">"error occurred"</span>;
+        <span class="kw">return</span> result.<span class="mt">toUpperCase</span>();
+    });</pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#fb7185;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    allOf / anyOf — Nhiều CF song song
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>CF_Parallel.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// allOf — đợi TẤT CẢ hoàn thành</span>
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">String</span>&gt; cf1 = <span class="ty">CompletableFuture</span>.<span class="mt">supplyAsync</span>(() -> <span class="mt">fetchUser</span>());
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">String</span>&gt; cf2 = <span class="ty">CompletableFuture</span>.<span class="mt">supplyAsync</span>(() -> <span class="mt">fetchProfile</span>());
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">String</span>&gt; cf3 = <span class="ty">CompletableFuture</span>.<span class="mt">supplyAsync</span>(() -> <span class="mt">fetchSettings</span>());
+
+<span class="ty">CompletableFuture</span>.<span class="mt">allOf</span>(cf1, cf2, cf3)
+    .<span class="mt">thenRun</span>(() -> {
+        <span class="ty">String</span> user     = cf1.<span class="mt">join</span>();  <span class="cm">// join() = get() nhưng không checked exception</span>
+        <span class="ty">String</span> profile  = cf2.<span class="mt">join</span>();
+        <span class="ty">String</span> settings = cf3.<span class="mt">join</span>();
+        <span class="mt">buildDashboard</span>(user, profile, settings);
+    });
+
+<span class="cm">// anyOf — lấy kết quả của CF hoàn thành SỚM NHẤT</span>
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">Object</span>&gt; fastest = <span class="ty">CompletableFuture</span>.<span class="mt">anyOf</span>(
+    <span class="ty">CompletableFuture</span>.<span class="mt">supplyAsync</span>(() -> <span class="mt">queryDB1</span>()),
+    <span class="ty">CompletableFuture</span>.<span class="mt">supplyAsync</span>(() -> <span class="mt">queryDB2</span>()),
+    <span class="ty">CompletableFuture</span>.<span class="mt">supplyAsync</span>(() -> <span class="mt">queryCache</span>())
+);
+
+<span class="cm">// Ví dụ thực tế: gọi 3 service song song và gộp kết quả</span>
+<span class="ty">CompletableFuture</span>&lt;<span class="ty">ProductPage</span>&gt; productPage =
+    <span class="ty">CompletableFuture</span>.<span class="mt">supplyAsync</span>(() -> <span class="mt">getProduct</span>(id))
+    .<span class="mt">thenCombine</span>(
+        <span class="ty">CompletableFuture</span>.<span class="mt">supplyAsync</span>(() -> <span class="mt">getReviews</span>(id)),
+        (product, reviews) -> <span class="kw">new</span> <span class="ty">ProductPage</span>(product, reviews)
+    )
+    .<span class="mt">thenCombine</span>(
+        <span class="ty">CompletableFuture</span>.<span class="mt">supplyAsync</span>(() -> <span class="mt">getInventory</span>(id)),
+        (page, inventory) -> page.<span class="mt">withInventory</span>(inventory)
+    );
+<span class="cm">// Ba service chạy song song → tổng thời gian ≈ max(t1, t2, t3)</span></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════
+             SECTION 6 — OPTIONAL
+        ══════════════════════════════════════════ -->
+        <section class="section" id="s6">
+            <div class="section-header">
+                <div class="section-icon bg6" style="font-size:22px">🛡️</div>
+                <div class="section-meta">
+                    <div class="section-number">Chủ đề 06</div>
+                    <div class="section-title c6">Optional Class</div>
+                    <div class="section-desc">Loại bỏ NullPointerException — xử lý giá trị có thể null một cách tường minh</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#fbbf24;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Optional là gì và tại sao dùng?
+                </div>
+                <p><code>Optional&lt;T&gt;</code> là container có thể chứa hoặc không chứa giá trị non-null. Thay vì trả về <code>null</code> (dẫn đến NPE), method trả về <code>Optional</code> — <strong>buộc caller phải xử lý trường hợp không có giá trị</strong>.</p>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>Optional_Creation.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// Tạo Optional</span>
+<span class="ty">Optional</span>&lt;<span class="ty">String</span>&gt; empty   = <span class="ty">Optional</span>.<span class="mt">empty</span>();           <span class="cm">// rỗng</span>
+<span class="ty">Optional</span>&lt;<span class="ty">String</span>&gt; present = <span class="ty">Optional</span>.<span class="mt">of</span>(<span class="st">"hello"</span>);       <span class="cm">// non-null</span>
+<span class="ty">Optional</span>&lt;<span class="ty">String</span>&gt; maybe   = <span class="ty">Optional</span>.<span class="mt">ofNullable</span>(name);  <span class="cm">// null OK</span>
+
+<span class="cm">// ❌ Anti-pattern: trả về null</span>
+<span class="kw">public</span> <span class="ty">User</span> <span class="mt">findUser</span>(<span class="kw">int</span> id) {
+    <span class="kw">return</span> db.<span class="mt">find</span>(id); <span class="cm">// có thể null → NPE ở caller</span>
+}
+
+<span class="cm">// ✅ Đúng: trả về Optional</span>
+<span class="kw">public</span> <span class="ty">Optional</span>&lt;<span class="ty">User</span>&gt; <span class="mt">findUser</span>(<span class="kw">int</span> id) {
+    <span class="kw">return</span> <span class="ty">Optional</span>.<span class="mt">ofNullable</span>(db.<span class="mt">find</span>(id));
+}</pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#fbbf24;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Các method quan trọng
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>Optional_Methods.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="ty">Optional</span>&lt;<span class="ty">User</span>&gt; opt = <span class="mt">findUser</span>(<span class="nu">42</span>);
+
+<span class="cm">// Kiểm tra</span>
+opt.<span class="mt">isPresent</span>();   <span class="cm">// true nếu có giá trị</span>
+opt.<span class="mt">isEmpty</span>();     <span class="cm">// true nếu rỗng (Java 11+)</span>
+
+<span class="cm">// Lấy giá trị</span>
+opt.<span class="mt">get</span>();                            <span class="cm">// ⚠️ throw nếu empty</span>
+opt.<span class="mt">orElse</span>(<span class="ty">User</span>.<span class="mt">guest</span>());            <span class="cm">// default value</span>
+opt.<span class="mt">orElseGet</span>(() -> <span class="mt">createGuest</span>()); <span class="cm">// lazy default (Supplier)</span>
+opt.<span class="mt">orElseThrow</span>(() -> <span class="kw">new</span> <span class="ty">NotFoundException</span>(<span class="st">"User not found"</span>));
+
+<span class="cm">// Transform — tất cả trả về Optional (không throw nếu empty)</span>
+opt.<span class="mt">map</span>(<span class="ty">User</span>::<span class="mt">getName</span>);             <span class="cm">// Optional&lt;String&gt;</span>
+opt.<span class="mt">flatMap</span>(<span class="ty">User</span>::<span class="mt">getAddress</span>);     <span class="cm">// khi getAddress trả Optional</span>
+opt.<span class="mt">filter</span>(u -> u.<span class="mt">isActive</span>());     <span class="cm">// Optional&lt;User&gt; hoặc empty</span>
+
+<span class="cm">// Hành động</span>
+opt.<span class="mt">ifPresent</span>(u -> <span class="mt">sendEmail</span>(u));  <span class="cm">// chạy nếu có giá trị</span>
+opt.<span class="mt">ifPresentOrElse</span>(                  <span class="cm">// Java 9+</span>
+    u -> <span class="mt">sendEmail</span>(u),
+    ()  -> <span class="ty">System</span>.out.<span class="mt">println</span>(<span class="st">"User not found"</span>)
+);
+
+<span class="cm">// or() — Java 9+: fallback sang Optional khác</span>
+<span class="ty">Optional</span>&lt;<span class="ty">User</span>&gt; result = <span class="mt">findInDB</span>(id)
+    .<span class="mt">or</span>(() -> <span class="mt">findInCache</span>(id))
+    .<span class="mt">or</span>(() -> <span class="mt">findInBackup</span>(id));</pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#fbbf24;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Chaining Optional — Tránh NPE trong chuỗi dài
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>Optional_Chaining.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// ❌ Cũ: kiểm tra null thủ công từng bước</span>
+<span class="ty">String</span> city = <span class="kw">null</span>;
+<span class="ty">User</span> user = <span class="mt">getUser</span>(id);
+<span class="kw">if</span> (user != <span class="kw">null</span>) {
+    <span class="ty">Address</span> addr = user.<span class="mt">getAddress</span>();
+    <span class="kw">if</span> (addr != <span class="kw">null</span>) {
+        city = addr.<span class="mt">getCity</span>();
+    }
+}
+
+<span class="cm">// ✅ Mới: Optional chain</span>
+<span class="ty">String</span> city = <span class="mt">findUser</span>(id)
+    .<span class="mt">flatMap</span>(<span class="ty">User</span>::<span class="mt">getOptionalAddress</span>)  <span class="cm">// Optional&lt;Address&gt;</span>
+    .<span class="mt">map</span>(<span class="ty">Address</span>::<span class="mt">getCity</span>)              <span class="cm">// Optional&lt;String&gt;</span>
+    .<span class="mt">orElse</span>(<span class="st">"Unknown City"</span>);            <span class="cm">// String</span>
+
+<span class="cm">// Ví dụ phức tạp: tìm giảm giá của user</span>
+<span class="kw">double</span> discount = <span class="mt">findUser</span>(userId)
+    .<span class="mt">filter</span>(<span class="ty">User</span>::<span class="mt">isPremium</span>)
+    .<span class="mt">flatMap</span>(<span class="ty">User</span>::<span class="mt">getMembership</span>)
+    .<span class="mt">map</span>(<span class="ty">Membership</span>::<span class="mt">getDiscountRate</span>)
+    .<span class="mt">orElse</span>(<span class="nu">0.0</span>);
+
+<span class="cm">// ⚠️ KHÔNG nên làm: Optional cho field, collection item</span>
+<span class="cm">// Optional chỉ dùng cho return type của method, không phải field</span>
+<span class="kw">class</span> <span class="ty">BadExample</span> {
+    <span class="kw">private</span> <span class="ty">Optional</span>&lt;<span class="ty">String</span>&gt; name; <span class="cm">// ❌ Không làm thế này</span>
+}</pre>
+                </div>
+
+                <div class="info-box info-tip">
+                    <span class="icon">💡</span>
+                    <p><strong>Best practices:</strong> Dùng Optional làm return type — không bao giờ làm parameter, field, hay trong collection. <code>orElse()</code> luôn evaluate expression dù có giá trị; dùng <code>orElseGet()</code> (lazy) khi expression tốn chi phí.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════
+             SECTION 7 — MEMORY MANAGEMENT
+        ══════════════════════════════════════════ -->
+        <section class="section" id="s7">
+            <div class="section-header">
+                <div class="section-icon bg7" style="font-size:22px">🧠</div>
+                <div class="section-meta">
+                    <div class="section-number">Chủ đề 07</div>
+                    <div class="section-title c7">Quản lý bộ nhớ (Memory Management)</div>
+                    <div class="section-desc">Heap, Stack, GC, memory leaks và tuning JVM — hiểu để tối ưu ứng dụng</div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#e879f9;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Kiến trúc bộ nhớ JVM
+                </div>
+
+                <div class="mem-diagram">
+                    <div class="mem-region" style="border-color:rgba(251,113,133,0.4);background:rgba(251,113,133,0.05)">
+                        <div class="mem-title" style="color:#fb7185">📦 Heap Memory</div>
+                        <div class="mem-items">
+                            <div class="mem-item"><span style="color:#fbbf24">Young Gen</span><span style="color:#94a3b8">Eden + S0 + S1</span></div>
+                            <div class="mem-item"><span style="color:#34d399">Old Gen</span><span style="color:#94a3b8">Long-lived objects</span></div>
+                            <div class="mem-item" style="color:#64748b;font-size:10px;justify-content:center">GC quản lý | -Xms -Xmx</div>
+                        </div>
+                    </div>
+                    <div class="mem-region" style="border-color:rgba(56,189,248,0.4);background:rgba(56,189,248,0.05)">
+                        <div class="mem-title" style="color:#38bdf8">🗂 Stack Memory</div>
+                        <div class="mem-items">
+                            <div class="mem-item"><span style="color:#93c5fd">Thread Stack</span><span style="color:#94a3b8">Mỗi thread</span></div>
+                            <div class="mem-item"><span style="color:#93c5fd">Stack Frame</span><span style="color:#94a3b8">Mỗi method call</span></div>
+                            <div class="mem-item"><span style="color:#93c5fd">Local vars</span><span style="color:#94a3b8">Primitive + refs</span></div>
+                        </div>
+                    </div>
+                    <div class="mem-region" style="border-color:rgba(167,139,250,0.4);background:rgba(167,139,250,0.05)">
+                        <div class="mem-title" style="color:#a78bfa">⚙️ Metaspace</div>
+                        <div class="mem-items">
+                            <div class="mem-item"><span style="color:#c4b5fd">Class metadata</span><span style="color:#94a3b8">Native memory</span></div>
+                            <div class="mem-item"><span style="color:#c4b5fd">Method bytecode</span><span style="color:#94a3b8">JIT compiled</span></div>
+                            <div class="mem-item" style="color:#64748b;font-size:10px;justify-content:center">Java 8+ thay PermGen</div>
+                        </div>
+                    </div>
+                    <div class="mem-region" style="border-color:rgba(52,211,153,0.4);background:rgba(52,211,153,0.05)">
+                        <div class="mem-title" style="color:#34d399">🔤 String Pool</div>
+                        <div class="mem-items">
+                            <div class="mem-item"><span style="color:#6ee7b7">Interned Strings</span><span style="color:#94a3b8">Heap (Java 7+)</span></div>
+                            <div class="mem-item"><span style="color:#6ee7b7">"hello" == "hello"</span><span style="color:#94a3b8">true</span></div>
+                            <div class="mem-item" style="color:#64748b;font-size:10px;justify-content:center">intern() để thêm manual</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#e879f9;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Garbage Collection — Cơ chế thu gom
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>GC_Lifecycle.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// Đối tượng đủ điều kiện bị GC khi không còn tham chiếu nào đến nó</span>
+
+<span class="cm">// ✅ Object tham chiếu — KHÔNG bị GC</span>
+<span class="ty">String</span> s = <span class="kw">new</span> <span class="ty">String</span>(<span class="st">"hello"</span>);  <span class="cm">// s trỏ vào object</span>
+
+<span class="cm">// ✅ Object không tham chiếu — SẼ bị GC</span>
+s = <span class="kw">null</span>;                          <span class="cm">// object "hello" eligible</span>
+
+<span class="cm">// Generation: Young → Old</span>
+<span class="cm">// Minor GC: dọn Young Gen (Eden → Survivor), NHANH</span>
+<span class="cm">// Major GC: dọn Old Gen, CHẬM hơn</span>
+<span class="cm">// Full GC: dọn toàn bộ Heap, CHẬM NHẤT (stop-the-world)</span>
+
+<span class="cm">// finalize() — deprecated, KHÔNG dùng</span>
+<span class="an">@Override</span>
+<span class="kw">protected void</span> <span class="mt">finalize</span>() { <span class="cm">// ❌ unreliable, deprecated Java 9+</span> }
+
+<span class="cm">// Thay thế: try-with-resources + AutoCloseable</span>
+<span class="kw">try</span> (<span class="ty">Connection</span> conn = <span class="mt">getConnection</span>()) {
+    <span class="cm">// dùng conn</span>
+} <span class="cm">// conn.close() tự động gọi</span>
+
+<span class="cm">// Weak / Soft / Phantom References</span>
+<span class="ty">WeakReference</span>&lt;<span class="ty">BigObject</span>&gt; weak = <span class="kw">new</span> <span class="ty">WeakReference</span>&lt;&gt;(<span class="kw">new</span> <span class="ty">BigObject</span>());
+<span class="cm">// GC thu gom ngay khi không còn strong ref</span>
+<span class="cm">// Dùng cho WeakHashMap (cache không giữ keys)</span>
+
+<span class="ty">SoftReference</span>&lt;<span class="ty">BigImage</span>&gt; soft = <span class="kw">new</span> <span class="ty">SoftReference</span>&lt;&gt;(<span class="kw">new</span> <span class="ty">BigImage</span>());
+<span class="cm">// GC chỉ thu gom khi thực sự cần memory (memory-sensitive cache)</span></pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#e879f9;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Memory Leaks — Nguyên nhân và phòng tránh
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>MemoryLeaks.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// ❌ Leak 1: Static collection tích lũy không xóa</span>
+<span class="kw">static</span> <span class="ty">Map</span>&lt;<span class="ty">String</span>, <span class="ty">Session</span>&gt; sessions = <span class="kw">new</span> <span class="ty">HashMap</span>&lt;&gt;();
+<span class="cm">// sessions chưa bao giờ xóa entry cũ → leak</span>
+<span class="cm">// ✅ Fix: sessions.remove(key) khi logout, hoặc dùng WeakHashMap</span>
+
+<span class="cm">// ❌ Leak 2: Listener không unregister</span>
+<span class="kw">public class</span> <span class="ty">MyComponent</span> {
+    <span class="kw">public void</span> <span class="mt">init</span>() {
+        eventBus.<span class="mt">subscribe</span>(<span class="st">"event"</span>, <span class="kw">this</span>::<span class="mt">handle</span>);
+    }
+    <span class="cm">// ❌ chưa unsubscribe → GC không thể collect MyComponent</span>
+    <span class="cm">// ✅ Fix: unsubscribe trong destroy()/close()</span>
+    <span class="kw">public void</span> <span class="mt">destroy</span>() {
+        eventBus.<span class="mt">unsubscribe</span>(<span class="st">"event"</span>, <span class="kw">this</span>::<span class="mt">handle</span>);
+    }
+}
+
+<span class="cm">// ❌ Leak 3: Inner class giữ reference đến outer class</span>
+<span class="kw">class</span> <span class="ty">Outer</span> {
+    <span class="kw">private byte</span>[] data = <span class="kw">new byte</span>[<span class="nu">1024</span> * <span class="nu">1024</span>];  <span class="cm">// 1MB</span>
+    <span class="kw">class</span> <span class="ty">Inner</span> { ... }  <span class="cm">// Inner giữ tham chiếu đến Outer!</span>
+    <span class="cm">// ✅ Fix: dùng static nested class</span>
+    <span class="kw">static class</span> <span class="ty">StaticInner</span> { ... }
+}
+
+<span class="cm">// ❌ Leak 4: ThreadLocal không cleanup</span>
+<span class="kw">static</span> <span class="ty">ThreadLocal</span>&lt;<span class="ty">Session</span>&gt; threadLocal = <span class="kw">new</span> <span class="ty">ThreadLocal</span>&lt;&gt;();
+<span class="kw">public void</span> <span class="mt">handleRequest</span>() {
+    threadLocal.<span class="mt">set</span>(<span class="kw">new</span> <span class="ty">Session</span>());
+    <span class="kw">try</span> {
+        <span class="cm">// xử lý</span>
+    } <span class="kw">finally</span> {
+        threadLocal.<span class="mt">remove</span>(); <span class="cm">// ✅ PHẢI remove() sau khi dùng xong</span>
+    }
+}</pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#e879f9;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    GC Algorithms & JVM Tuning
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>GC Algorithm</th><th>Đặc điểm</th><th>Use Case</th><th>JVM Flag</th></tr></thead>
+                        <tbody>
+                        <tr><td><strong>Serial GC</strong></td><td>Single-thread, simple</td><td>Client app, nhỏ</td><td><code>-XX:+UseSerialGC</code></td></tr>
+                        <tr><td><strong>Parallel GC</strong></td><td>Multi-thread, throughput</td><td>Batch processing</td><td><code>-XX:+UseParallelGC</code></td></tr>
+                        <tr><td><strong>G1 GC</strong></td><td>Balanced, low pause (default Java 9+)</td><td>General purpose</td><td><code>-XX:+UseG1GC</code></td></tr>
+                        <tr><td><strong>ZGC</strong></td><td>Ultra-low latency (&lt;1ms)</td><td>Latency-sensitive</td><td><code>-XX:+UseZGC</code></td></tr>
+                        <tr><td><strong>Shenandoah</strong></td><td>Concurrent, low pause</td><td>Real-time apps</td><td><code>-XX:+UseShenandoahGC</code></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>JVM_Tuning.sh</span><span class="code-lang-badge">Shell</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm"># Heap size: min 512m, max 4g</span>
+java -Xms512m -Xmx4g -jar app.jar
+
+<span class="cm"># Dùng G1GC với max pause 200ms</span>
+java -XX:+UseG1GC \
+     -XX:MaxGCPauseMillis=200 \
+     -XX:+PrintGCDetails \
+     -Xlog:gc*:file=gc.log \
+     -jar app.jar
+
+<span class="cm"># ZGC cho latency thấp (Java 15+)</span>
+java -XX:+UseZGC \
+     -XX:+ZGenerational \
+     -Xmx8g \
+     -jar app.jar
+
+<span class="cm"># Monitor memory lúc runtime</span>
+jmap -heap &lt;pid&gt;         <span class="cm"># heap info</span>
+jmap -dump:live,format=b,file=heap.hprof &lt;pid&gt;  <span class="cm"># heap dump</span>
+jstat -gcutil &lt;pid&gt; 1000  <span class="cm"># GC stats mỗi 1 giây</span></pre>
+                </div>
+            </div>
+
+            <div class="subsection">
+                <div class="subsection-title">
+                    <span style="background:#e879f9;width:3px;height:20px;border-radius:2px;display:inline-block"></span>
+                    Tối ưu bộ nhớ — Best Practices
+                </div>
+
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-title"><div class="code-dots"><div class="code-dot" style="background:#ff5f56"></div><div class="code-dot" style="background:#ffbd2e"></div><div class="code-dot" style="background:#27c93f"></div></div><span>MemoryOptimization.java</span><span class="code-lang-badge">Java</span></div>
+                        <button class="copy-btn" onclick="copyCode(this)">copy</button>
+                    </div>
+                    <pre><span class="cm">// ① StringBuilder thay String concatenation trong loop</span>
+<span class="ty">StringBuilder</span> sb = <span class="kw">new</span> <span class="ty">StringBuilder</span>();
+<span class="kw">for</span> (<span class="ty">String</span> s : list) sb.<span class="mt">append</span>(s);  <span class="cm">// ✅ 1 object</span>
+<span class="cm">// String result = ""; for (s : list) result += s;  ❌ n objects</span>
+
+<span class="cm">// ② Object Pool — tái sử dụng object tốn kém</span>
+<span class="ty">ObjectPool</span>&lt;<span class="ty">Connection</span>&gt; pool = <span class="kw">new</span> <span class="ty">ConnectionPool</span>(<span class="nu">10</span>);
+<span class="ty">Connection</span> conn = pool.<span class="mt">borrow</span>();
+<span class="kw">try</span> { ... } <span class="kw">finally</span> { pool.<span class="mt">return</span>(conn); }
+
+<span class="cm">// ③ Dùng primitive thay Wrapper khi có thể</span>
+<span class="kw">int</span>   n1 = <span class="nu">42</span>;      <span class="cm">// 4 bytes trên stack</span>
+<span class="ty">Integer</span> n2 = <span class="nu">42</span>;  <span class="cm">// 16 bytes trên heap (object overhead)</span>
+
+<span class="cm">// ④ Không giữ reference lâu hơn cần thiết</span>
+<span class="kw">public void</span> <span class="mt">process</span>(<span class="ty">List</span>&lt;<span class="ty">BigData</span>&gt; data) {
+    <span class="kw">for</span> (<span class="ty">BigData</span> item : data) {
+        <span class="mt">handle</span>(item);
+        <span class="cm">// item sẽ được GC collect sau vòng lặp</span>
+    }
+}
+
+<span class="cm">// ⑤ Stream cho dữ liệu lớn — không load hết vào memory</span>
+<span class="kw">try</span> (<span class="ty">Stream</span>&lt;<span class="ty">String</span>&gt; lines = <span class="ty">Files</span>.<span class="mt">lines</span>(<span class="ty">Paths</span>.<span class="mt">get</span>(<span class="st">"huge.csv"</span>))) {
+    lines.<span class="mt">filter</span>(line -> line.<span class="mt">startsWith</span>(<span class="st">"ERROR"</span>))
+         .<span class="mt">forEach</span>(<span class="ty">System</span>.out::<span class="mt">println</span>);
+    <span class="cm">// Đọc từng dòng, không load 10GB vào RAM</span>
+}
+
+<span class="cm">// ⑥ Record (Java 16+) — immutable lightweight DTO</span>
+<span class="kw">record</span> <span class="ty">Point</span>(<span class="kw">double</span> x, <span class="kw">double</span> y) {}
+<span class="cm">// Ít boilerplate, GC-friendly, stack-allocated khi nhỏ</span></pre>
+                </div>
+
+                <div class="info-box info-tip">
+                    <span class="icon">💡</span>
+                    <p><strong>Công cụ phân tích memory:</strong> VisualVM (heap dump, GC monitor), Eclipse MAT (phân tích leak), JProfiler, async-profiler, và JVM flags <code>-XX:+PrintGCDetails</code> / <code>-Xlog:gc*</code> để theo dõi GC behavior.</p>
+                </div>
+            </div>
+        </section>
+
+    </div><!-- end content -->
+</main>
+
+<script>
+    // Copy button
+    function copyCode(btn) {
+        const pre = btn.closest('.code-block').querySelector('pre');
+        const text = pre.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            btn.textContent = 'copied!';
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.textContent = 'copy';
+                btn.classList.remove('copied');
+            }, 2000);
+        });
+    }
+
+    // Progress bar
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / docHeight) * 100;
+        document.getElementById('progressBar').style.width = progress + '%';
+    });
+
+    // Active nav on scroll
+    function setActive(el) {
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    const sections = document.querySelectorAll('section[id]');
+    const navItems = document.querySelectorAll('.nav-item');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('href') === '#' + entry.target.id) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+        });
+    }, { threshold: 0.25 });
+
+    sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
